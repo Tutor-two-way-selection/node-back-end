@@ -20,15 +20,13 @@ var sqlMap = {
         //按研究所
         select_search:'select * from teacher where search = ?',
         //已选择的导师
-        select_choice:'select * from teacher where id in (select id from choice where stuNum=?)',
+        select_choice:'select * from teacher where id in (select idFirst from choice where stuNum=?) or id in (select idSecond from choice where stuNum=?)',
         //第一/二志愿选择
-        select_teacher:"update choice set id = ? and priority =? and status='待确认' where stuNum =?",
-        //如果选择志愿的时候之前已填过则产生冲突
-        select_erro:'select * from choice where priority =? and stuNum =?',
-        //退选
-        exit_teacher:'update choice set priority=NULL and id=NULL where stuNum =? and id=?',
+        select_teacher:"update choice set idFirst = ? and idSecond =? and and adjust =? and statusFirst='待确认' and statusSecond='待确认' where stuNum =?",
+        //查看是否调剂
+        select_adjust:'select adjust from choice where stuNum=?',
         //查看自己的导师
-        check_teacher:'select * from choice where id in(select id from result where stuNum=?)',
+        check_teacher:'select * from teacher where id in(select id from result where stuNum=?)',
     },
     //导师
     teacher: {
