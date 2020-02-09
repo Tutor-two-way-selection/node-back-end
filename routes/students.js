@@ -19,8 +19,17 @@ router.get("/selfinfo", studentservices.selfInfo)
 router.get("/allteacher",studentservices.allTeacher )
 router.get("/teacherbyid",studentservices.teacherById )
 router.get("/teacherbydepartment",studentservices.teacherByDepartment)
-
-
+router.get("/regular",studentservices.regularTeaSlected)
+router.get("/mytutor",studentservices.tutorResult)
+router.get("/selected",studentservices.selectedResult);
+router.post('/uploadFile', upload.single('file'), (req, res, next) => {
+ 
+  
+  
+  let ret = {};
+  ret['code'] = 20000;
+  var file = req.file;
+  if (file) {
 
 
 

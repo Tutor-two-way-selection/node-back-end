@@ -12,15 +12,15 @@ var jsonWrite = function (res, ret) {
 };
 var stulogin=function(req,res,next){
     var sql=sqlMap.student.select_stunum;
-    //var addsql=req.body;
+    var addsql=req.body;
     var $result={
          success:0,
          passChanged:0,
     }
-    var addsql={
+    /*var addsql={
         stuNum:'201706062629',
         stuPass:'1234',
-    };
+    };*/
     query(sql, addsql.stuNum, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
@@ -48,11 +48,11 @@ var stulogin=function(req,res,next){
 }
 var changePass=function(req,res,next){
     var sql=sqlMap.student.select_stunum;
-   // var addsql=req.body;
-   var addsql={
+    var addsql=req.body;
+   /*var addsql={
     stuNum:'201706062629',
     newPass:'1234',
-    };
+    };*/
     var success=false;
     query(sql, addsql.stuNum, function (err, result) {
         if (err) {
@@ -88,8 +88,8 @@ var changePass=function(req,res,next){
 }
 var selfInfo = function (req, res, next) {
     var sql = sqlMap.student.select_num;
-    //var addsql=req.body.stuNum;
-    var addsql = "201706062629"
+    var addsql=req.body.stuNum;
+    //var addsql = "201706062629"
     var str = "";
     query(sql, addsql, function (err, result) {
         if (err) {
@@ -117,8 +117,8 @@ var allTeacher = function (req, res, next) {
 
 var teacherById = function (req, res, next) {
     var sql = sqlMap.student.select_oneteacher;
-    //var addsql = req.body.teaNum
-    var addsql = "1001"
+    var addsql = req.body.teaNum
+    //var addsql = "1001"
     var str = "";
     query(sql, addsql, function (err, result) {
         if (err) {
@@ -133,8 +133,8 @@ var teacherById = function (req, res, next) {
 
 var teacherByDepartment = function (req, res, next) {
     var sql = sqlMap.student.select_department;
-    //var addsql = req.body.teaDepart
-    var addsql = "数字媒体技术"
+    var addsql = req.body.teaDepart
+    //var addsql = "数字媒体技术"
     var str = "";
     query(sql, addsql, function (err, result) {
         if (err) {
@@ -148,6 +148,98 @@ var teacherByDepartment = function (req, res, next) {
 
 
 
+var regularTeaSlected=function(req,res,next){
+    var sql=sqlMap.student.select_teacher;
+    var addsql=req.body;
+   /*  var addsql={
+        stuID:'201706062629',
+        firstChoice:'1001',
+        secondChoice:'1002',
+        isRedistribute:true,
+    }*/
+    query(sql,[addsql.firstChoice,addsql.secondChoice,addsql.isRedistribute,addsql.stuID],function(err,result){
+        var data={
+            success:0
+        };
+        if(err){
+            console.log("[UPDATE ERRO]:",err.message);
+        }
+        if(result.affectedRows === undefined){
+            console.log("更新失败");
+            res.send(data);
+        }else{
+            data.success=1;
+            console.log(data);
+            res.send(data);
+        }  
+    });
+}
+var selectedResult=function(req,res,next){
+    var sql=sqlMap.student.select_choice;
+    var addsql=req.body;
+    /*var addsql={
+        stuID:'201706062629',
+        type:'regular'
+    };*/
+    query(sql,[addsql.stuID,addsql.stuID],function(err,result){
+        if(err){
+            console.log("[SELECT ERRO]:",err.message);
+        }
+        //var $result;
+       var $result={
+            firstChoice:{
+                id:'',
+                name:'',
+                department:'',
+                search:'',
+                contact:''
+            },
+            secondChoice:{
+                id:'',
+                name:'',
+                department:'',
+                search:'',
+                contact:''
+            },
+            isRedistribute:0
+        };
+        
+        if(result[0]===undefined){
+            console.log("查找失败");
+            res.send(result);
+        }else{
+            $result.firstChoice=result[0];
+            if(result.length==2){
+                $result.secondChoice=result[1];
+            }
+            var  sql2=sqlMap.student.select_adjust;
+            query(sql2,addsql.stuID,function(err,ret){
+                if(err){
+                    console.log("[SELECT ERRO]:",err.message);
+                }
+                $result.isRedistribute=ret[0].adjust;//ret[0]
+                res.send($result);
+            });    
+        }
+    });
+}
+var tutorResult=function(req,res,next){
+    var sql=sqlMap.student.check_teacher;
+    var addsql=req.body;
+    /*var addsql={
+        stuID:'201706062629',
+        type:'regular'
+    };*/
+    var str = "";
+    query(sql,addsql.stuID,function(err,result){
+        if(err){
+            console.log("[SELECT ERRO]:",err.message);
+        }
+        str = result;
+        console.log(str);
+        res.send(str);
+    });
+}
 
 module.exports = {
     stulogin,
@@ -156,4 +248,7 @@ module.exports = {
     teacherById,
     selfInfo,
     allTeacher,
+    regularTeaSlected,
+    selectedResult,
+    tutorResult
 }
