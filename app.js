@@ -8,7 +8,9 @@ var bodyParser = require('body-parser');
 var students = require('./routes/students');
 
 var app = express();
-
+var fs=require("fs")
+var multer = require('multer');//引入multer
+var upload = multer({dest: 'uploads/'});//设置上传文件存储地址
 // view engine setup
 
 // uncomment after placing your favicon in /public
@@ -32,12 +34,48 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/student', students);
 
 // catch 404 and forward to error handler
+app.use('/downloadFile', (req, res, next) => {
+  var filename = req.query.filename;
+  var oldname = req.query.oldname;
+  var file = './uploads/' + filename;
+  res.writeHead(200, {
+      'Content-Type': 'application/octet-stream',//告诉浏览器这是一个二进制文件
+      'Content-Disposition': 'attachment; filename=' + encodeURI(oldname),//告诉浏览器这是一个需要下载的文件
+  });//设置响应头
+  var readStream = fs.createReadStream(file);//得到文件输入流
+  
+  readStream.on('data', (chunk) => {
+      res.write(chunk, 'binary');//文档内容以二进制的格式写到response的输出流
+  });
+  readStream.on('end', () => {
+      res.end();
+  })
+})
+
+app.post('/uploadFile', upload.single('file'), (req, res, next) => {
+  let ret = {};
+  ret['code'] = 20000;
+  var file = req.file;
+  if (file) {
+
+    var fileNameArr = file.originalname.split('.');
+    var suffix = fileNameArr[fileNameArr.length - 1];
+    console.log(fileNameArr);
+    console.log(suffix);
+    
+    //文件重命名
+    fs.renameSync('./uploads/' + file.filename, `./uploads/${file.filename}.${suffix}`);
+    file['newfilename'] = `${file.filename}.${suffix}`;
+  }
+  ret['file'] = file;
+  //console.log(ret);
+  res.send(ret);
+})
+
 app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
-
-
 
 module.exports = app;
