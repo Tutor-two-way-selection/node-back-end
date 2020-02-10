@@ -1,147 +1,249 @@
-/*
- Navicat Premium Data Transfer
+CREATE DATABASE  IF NOT EXISTS `test` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `test`;
+-- MySQL dump 10.13  Distrib 8.0.18, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: test
+-- ------------------------------------------------------
+-- Server version	8.0.18
 
- Source Server         : localhost_3306
- Source Server Type    : MySQL
- Source Server Version : 80019
- Source Host           : localhost:3306
- Source Schema         : test
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
- Target Server Type    : MySQL
- Target Server Version : 80019
- File Encoding         : 65001
+--
+-- Table structure for table `admin`
+--
 
- Date: 09/02/2020 19:57:22
-*/
-
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for admin
--- ----------------------------
 DROP TABLE IF EXISTS `admin`;
-CREATE TABLE `admin`  (
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `admin` (
   `adminNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `adminPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `adminGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `adminPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `adminGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`adminNum`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Records of admin
--- ----------------------------
-INSERT INTO `admin` VALUES ('123456', '123456', '2017');
+--
+-- Dumping data for table `admin`
+--
 
--- ----------------------------
--- Table structure for choice
--- ----------------------------
-DROP TABLE IF EXISTS `choice`;
-CREATE TABLE `choice`  (
+LOCK TABLES `admin` WRITE;
+/*!40000 ALTER TABLE `admin` DISABLE KEYS */;
+INSERT INTO `admin` VALUES ('123456','123456','2017');
+/*!40000 ALTER TABLE `admin` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `graduatechoice`
+--
+
+DROP TABLE IF EXISTS `graduatechoice`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `graduatechoice` (
   `stuNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `idFirst` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `statusFirst` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `idSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `statusSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `adjust` tinyint(0) NULL DEFAULT NULL,
+  `idFirst` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `statusFirst` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `idSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `statusSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `adjust` tinyint(4) DEFAULT NULL,
+  `haveSecond` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`stuNum`) USING BTREE,
-  INDEX `teacher_key`(`idFirst`) USING BTREE,
-  CONSTRAINT `stuNum_key` FOREIGN KEY (`stuNum`) REFERENCES `student` (`stuNum`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `teacher_key` FOREIGN KEY (`idFirst`) REFERENCES `teacher` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  KEY `teacher_key` (`idFirst`,`idSecond`) USING BTREE,
+  CONSTRAINT `stuNum_key` FOREIGN KEY (`stuNum`) REFERENCES `student` (`stuNum`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Records of choice
--- ----------------------------
-INSERT INTO `choice` VALUES ('201706062629', '1001', '未处理', '1002', '未处理', 1);
+--
+-- Dumping data for table `graduatechoice`
+--
 
--- ----------------------------
--- Table structure for result
--- ----------------------------
+LOCK TABLES `graduatechoice` WRITE;
+/*!40000 ALTER TABLE `graduatechoice` DISABLE KEYS */;
+INSERT INTO `graduatechoice` VALUES ('201706062629',NULL,NULL,NULL,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `graduatechoice` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `regularchoice`
+--
+
+DROP TABLE IF EXISTS `regularchoice`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `regularchoice` (
+  `stuNum` varchar(255) NOT NULL,
+  `idFirst` varchar(255) DEFAULT NULL,
+  `statusFirst` varchar(255) DEFAULT NULL,
+  `idSecond` varchar(255) DEFAULT NULL,
+  `statusSecond` varchar(255) DEFAULT NULL,
+  `adjust` tinyint(4) DEFAULT NULL,
+  `haveSecond` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`stuNum`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `regularchoice`
+--
+
+LOCK TABLES `regularchoice` WRITE;
+/*!40000 ALTER TABLE `regularchoice` DISABLE KEYS */;
+INSERT INTO `regularchoice` VALUES ('201706062629',NULL,NULL,NULL,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `regularchoice` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `result`
+--
+
 DROP TABLE IF EXISTS `result`;
-CREATE TABLE `result`  (
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `result` (
   `stuNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`stuNum`) USING BTREE,
-  INDEX `id5`(`id`) USING BTREE,
+  KEY `id5` (`id`) USING BTREE,
   CONSTRAINT `id5` FOREIGN KEY (`id`) REFERENCES `teacher` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `stuNum5` FOREIGN KEY (`stuNum`) REFERENCES `student` (`stuNum`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Records of result
--- ----------------------------
-INSERT INTO `result` VALUES ('201706062629', NULL);
+--
+-- Dumping data for table `result`
+--
 
--- ----------------------------
--- Table structure for stuaccount
--- ----------------------------
+LOCK TABLES `result` WRITE;
+/*!40000 ALTER TABLE `result` DISABLE KEYS */;
+INSERT INTO `result` VALUES ('201706062629',NULL);
+/*!40000 ALTER TABLE `result` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `stuaccount`
+--
+
 DROP TABLE IF EXISTS `stuaccount`;
-CREATE TABLE `stuaccount`  (
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `stuaccount` (
   `stuNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `initPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `stuPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `passChanged` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  INDEX `stunum1`(`stuNum`) USING BTREE,
+  `initPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `stuPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `passChanged` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  KEY `stunum1` (`stuNum`) USING BTREE,
   CONSTRAINT `stunum1` FOREIGN KEY (`stuNum`) REFERENCES `student` (`stuNum`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Records of stuaccount
--- ----------------------------
-INSERT INTO `stuaccount` VALUES ('201706062629', '291021', '291021', NULL);
+--
+-- Dumping data for table `stuaccount`
+--
 
--- ----------------------------
--- Table structure for student
--- ----------------------------
+LOCK TABLES `stuaccount` WRITE;
+/*!40000 ALTER TABLE `stuaccount` DISABLE KEYS */;
+INSERT INTO `stuaccount` VALUES ('201706062629','291021','291021',NULL);
+/*!40000 ALTER TABLE `stuaccount` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `student`
+--
+
 DROP TABLE IF EXISTS `student`;
-CREATE TABLE `student`  (
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `student` (
   `stuNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `stuName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `stuClass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `stuTelephone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `stuGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `stuName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `stuClass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `stuTelephone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `stuGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   PRIMARY KEY (`stuNum`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Records of student
--- ----------------------------
-INSERT INTO `student` VALUES ('201706062629', '张三', '数字媒体技术1班', '123456789', '2017');
+--
+-- Dumping data for table `student`
+--
 
--- ----------------------------
--- Table structure for teaaccount
--- ----------------------------
+LOCK TABLES `student` WRITE;
+/*!40000 ALTER TABLE `student` DISABLE KEYS */;
+INSERT INTO `student` VALUES ('201706062629','张三','数字媒体技术1班','123456789','2017');
+/*!40000 ALTER TABLE `student` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `teaaccount`
+--
+
 DROP TABLE IF EXISTS `teaaccount`;
-CREATE TABLE `teaaccount`  (
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `teaaccount` (
   `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `pass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  INDEX `id1`(`id`) USING BTREE,
+  `pass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  KEY `id1` (`id`) USING BTREE,
   CONSTRAINT `id1` FOREIGN KEY (`id`) REFERENCES `teacher` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Records of teaaccount
--- ----------------------------
-INSERT INTO `teaaccount` VALUES ('1001', '12345678');
+--
+-- Dumping data for table `teaaccount`
+--
 
--- ----------------------------
--- Table structure for teacher
--- ----------------------------
+LOCK TABLES `teaaccount` WRITE;
+/*!40000 ALTER TABLE `teaaccount` DISABLE KEYS */;
+INSERT INTO `teaaccount` VALUES ('1001','12345678');
+/*!40000 ALTER TABLE `teaaccount` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `teacher`
+--
+
 DROP TABLE IF EXISTS `teacher`;
-CREATE TABLE `teacher`  (
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `teacher` (
   `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `department` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `search` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `contact` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `department` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `search` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `contact` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `isgraduate` tinyint(4) DEFAULT '1',
+  `isregular` tinyint(4) DEFAULT '1',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ----------------------------
--- Records of teacher
--- ----------------------------
-INSERT INTO `teacher` VALUES ('1001', '刘梅', '数字媒体技术', '计算机图形学', '123456789');
-INSERT INTO `teacher` VALUES ('1002', '张浩', '数字媒体技术', '图像处理', '123456789');
+--
+-- Dumping data for table `teacher`
+--
 
-SET FOREIGN_KEY_CHECKS = 1;
+LOCK TABLES `teacher` WRITE;
+/*!40000 ALTER TABLE `teacher` DISABLE KEYS */;
+INSERT INTO `teacher` VALUES ('1001','刘梅','智慧城市研究所','计算机图形学','123456789',0,1),('1002','张浩','计算机视觉研究所','图像处理','123456789',1,0),('1003','李波','软件研究所','操作系统','123456789',1,1);
+/*!40000 ALTER TABLE `teacher` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2020-02-10 17:12:37

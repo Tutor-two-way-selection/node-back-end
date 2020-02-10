@@ -46,7 +46,7 @@ var stulogin=function(req,res,next){
 
     });
 }
-var changePass=function(req,res,next){
+var changePass=function(req,res,next){//修改密码
     var sql=sqlMap.student.select_stunum;
     var addsql=req.body;
    /*var addsql={
@@ -225,11 +225,11 @@ var selectedResult=function(req,res,next){
 }
 var tutorResult=function(req,res,next){
     var sql=sqlMap.student.check_teacher;
-    var addsql=req.body;
-    /*var addsql={
+    //var addsql=req.body;
+    var addsql={
         stuID:'201706062629',
         type:'regular'
-    };*/
+    };
     var str = "";
     query(sql,addsql.stuID,function(err,result){
         if(err){
