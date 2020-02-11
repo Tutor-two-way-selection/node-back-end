@@ -53,6 +53,35 @@ app.use('/downloadFile', (req, res, next) => {
     res.end();
   })
 })
+app.use('/onlineRead',
+  (req, res, next) => {
+
+    var urlarr = req.url.split('/');
+    var filename = urlarr[urlarr.length - 1]
+    var file = 'uploads/' + filename;
+    var stats = fs.statSync(file);
+    if (stats.isFile())
+      res.set({
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': 'attachment; filename=' + filename,
+        'Content-Length': stats.size
+      });
+    fs.createReadStream(file).pipe(res);
+  }
+)
+// res.writeHead(200, {
+//   'Content-Type': 'application/octet-stream', //告诉浏览器这是一个二进制文件
+//   'Content-Disposition': 'attachment; filename=' + encodeURI(filename), //告诉浏览器这是一个需要下载的文件
+// }); //设置响应头
+// var readStream = fs.createReadStream(file); //得到文件输入流
+
+// readStream.on('data', (chunk) => {
+//   res.write(chunk, 'binary'); //文档内容以二进制的格式写到response的输出流
+// });
+// readStream.on('end', () => {
+//   res.end();
+// })
+
 
 app.use('/uploadFile', upload.single('file'), (req, res, next) => {
   let ret = {};

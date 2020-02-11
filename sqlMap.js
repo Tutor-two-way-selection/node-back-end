@@ -31,24 +31,31 @@ var sqlMap = {
 
         //已选择的本科导师
         select_choice_regular_adjust: 'select adjust from regularchoice where stuNum=?',
-        select_choice_regular_havesecond: 'select haveSecond from regularchoice where stuNum=?',
         select_choice_regular_first: 'select * from teacher where id in (select idFirst from regularchoice where stuNum=?)',
         select_choice_regular_second: 'select * from teacher where id in (select idSecond from regularchoice where stuNum=?)',
 
         //已选择的毕业导师
         select_choice_graduate_adjust: 'select adjust from graduatechoice where stuNum=?',
-        select_choice_graduate_havesecond: 'select haveSecond from graduatechoice where stuNum=?',
         select_choice_graduate_first: 'select * from teacher where id in (select idFirst from graduatechoice where stuNum=?)',
         select_choice_graduate_second: 'select * from teacher where id in (select idSecond from graduatechoice where stuNum=?)',
 
 
         //本科导师选择
+        update_teacher_regular_first: "update regularchoice set idFirst = ?,statusFirst='待确认' where stuNum =?",
+        update_teacher_regular_second: "update regularchoice set idSecond = ?,statusSecond='待确认' where stuNum =?",
+        update_teacher_regular_isRedistribute: "update regularchoice set adjust =? where stuNum =?",
 
-        //第一/二志愿选择
-        select_teacher: "update choice set idFirst = ? and idSecond =? and and adjust =? and statusFirst='待确认' and statusSecond='待确认' where stuNum =?",
+
+
+        //毕业导师选择
+        update_teacher_graduate_first: "update graduatechoice set idFirst = ? ,statusFirst='待确认' where stuNum =?",
+        update_teacher_graduate_second: "update graduatechoice set idSecond = ?,statusSecond='待确认' where stuNum =?",
+        update_teacher_graduate_isRedistribute: 'update graduatechoice set adjust =? where stuNum =?',
 
         //查看自己的导师
-        check_teacher: 'select * from teacher where id in(select id from result where stuNum=?)',
+        check_teacher_graduate: 'select * from teacher where id in(select graduateid from result where stuNum=?)',
+        check_teacher_regular: 'select * from teacher where id in(select regularid from result where stuNum=?)',
+
     },
     //导师
     teacher: {
