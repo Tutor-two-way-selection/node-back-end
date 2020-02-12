@@ -84,40 +84,82 @@ var allTeacher = function (req, res, next) {
     }
     if (addsql.type) {
         if (addsql.type == "regular") {
-            var sql0 = sqlMap.student.select_allRegularTeacher;
-            query(sql0, null, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                } else {
-                    data.tutorList = result;
-                    res.send(data);
-                }
-            });
+            if (addsql.department) {
+                var sql00 = sqlMap.student.select_department_regular;
+                query(sql00, addsql.department, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        res.send(data);
+                    } else {
+                        data.tutorList = result;
+                        res.send(data);
+                    }
+                });
+            } else {
+                var sql0 = sqlMap.student.select_allRegularTeacher;
+                query(sql0, null, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        res.send(data);
+                    } else {
+                        data.tutorList = result;
+                        res.send(data);
+                    }
+                });
+            }
         } else if (addsql.type == "graduate") {
-            var sql1 = sqlMap.student.select_allGraduateTeacher;
-            query(sql1, null, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                } else {
-                    data.tutorList = result;
-                    res.send(data);
-                }
-            });
+            if (addsql.department) {
+                var sql10 = sqlMap.student.select_department_graduate;
+                query(sql10, addsql.department, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        res.send(data);
+                    } else {
+                        data.tutorList = result;
+                        res.send(data);
+                    }
+                });
+            } else {
+                var sql1 = sqlMap.student.select_allGraduateTeacher;
+                query(sql1, null, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        res.send(data);
+                    } else {
+                        data.tutorList = result;
+                        res.send(data);
+                    }
+                });
+            }
 
         }
     } else {
-        var sql2 = sqlMap.student.select_allteacher;
-        query(sql2, null, function (err, result) {
-            if (err) {
-                console.log("[SELECT ERROR]:", err.message);
-                res.send(data);
-            } else {
-                data.tutorList = result;
-                res.send(data);
-            }
-        });
+        if (addsql.department) {
+            var sql20 = sqlMap.student.select_department;
+            query(sql20, addsql.department, function (err, result) {
+                if (err) {
+                    console.log("[SELECT ERROR]:", err.message);
+                    res.send(data);
+                } else {
+                    data.tutorList = result;
+                    res.send(data);
+                }
+            });
+        } else {
+
+            var sql2 = sqlMap.student.select_allteacher;
+            query(sql2, null, function (err, result) {
+                if (err) {
+                    console.log("[SELECT ERROR]:", err.message);
+                    res.send(data);
+                } else {
+                    data.tutorList = result;
+                    res.send(data);
+                }
+            });
+        }
+
+
     }
 };
 
@@ -133,21 +175,6 @@ var teacherById = (req, res, next) => {
         str = result;
         console.log(str);
 
-        res.send(str);
-    });
-};
-
-var teacherByDepartment = (req, res, next) => {
-    var sql = sqlMap.student.select_department;
-    var addsql = req.body.teaDepart;
-    //var addsql = "数字媒体技术"
-    var str = "";
-    query(sql, addsql, (err, result) => {
-        if (err) {
-            console.log("[SELECT ERROR]:", err.message);
-        }
-        str = result;
-        console.log(str);
         res.send(str);
     });
 };
@@ -387,6 +414,54 @@ var tutorResult = (req, res, next) => {
 
 };
 
+var writeinfo = (req, res, next) => {
+    var addsql = req.body;
+    var data = {
+        success: false
+    }
+    if (addsql.tutorType == "regular") {
+        var sql0 = sqlMap.student.update_file_profile_regelar;
+        var sql1 = sqlMap.student.update_file_choice_regelar;
+        query(sql0, [addsql.profileTable, addsql.stuID], (err, result) => {
+            if (err) {
+                console.log("[UPDATE ERRO]:", err.message);
+                res.send(data);
+            } else {
+                query(sql1, [addsql.choiceTable, addsql.stuID], (err, result) => {
+                    if (err) {
+                        console.log("[UPDATE ERRO]:", err.message);
+                        res.send(data);
+                    } else {
+                        data.success = true;
+                        res.send(data);
+                    }
+                })
+            }
+        })
+    } else if (addsql.tutorType == "graduate") {
+        var sql2 = sqlMap.student.update_file_profile_graduate;
+        var sql3 = sqlMap.student.update_file_choice_graduate;
+        query(sql2, [addsql.profileTable, addsql.stuID], (err, result) => {
+            if (err) {
+                console.log("[UPDATE ERRO]:", err.message);
+                res.send(data);
+            } else {
+                query(sql3, [addsql.choiceTable, addsql.stuID], (err, result) => {
+                    if (err) {
+                        console.log("[UPDATE ERRO]:", err.message);
+                        res.send(data);
+                    } else {
+                        data.success = true;
+                        res.send(data);
+                    }
+                })
+            }
+        })
+    } else {
+        res.send(data);
+    }
+}
+
 module.exports = {
     stulogin,
     changePass,
@@ -398,4 +473,5 @@ module.exports = {
     tutorResult,
     chooseRegular,
     chooseGraduate,
+    writeinfo,
 }
