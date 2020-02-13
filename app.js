@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var students = require('./routes/students');
-
 var app = express();
 var fs = require("fs")
 var multer = require('multer'); //引入multer
@@ -109,5 +108,6 @@ app.use(function (req, res, next) {
   err.status = 404;
   next(err);
 });
+
 
 module.exports = app;

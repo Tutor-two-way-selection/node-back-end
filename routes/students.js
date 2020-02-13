@@ -7,14 +7,11 @@ router.get("/", function (req, res, next) {
 });
 router.get("/login", studentservices.stulogin)
 router.get("/changePass", studentservices.changePass)
-router.get("/selfinfo", studentservices.selfInfo)
 router.get("/allteacher", studentservices.allTeacher)
 router.get("/teacherbyid", studentservices.teacherById)
-router.get("/teacherbydepartment", studentservices.teacherByDepartment)
 router.get("/regular", studentservices.chooseRegular)
 router.get("/graduate", studentservices.chooseGraduate)
 router.get("/mytutor", studentservices.tutorResult)
-router.get("/selected", studentservices.selectedResult);
-router.get("/info", studentservices.selectedResult);
-
+router.get("/info", studentservices.writeinfo);
+router.get("/selected", studentservices.selectedResult)
 module.exports = router;

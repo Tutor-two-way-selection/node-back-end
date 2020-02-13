@@ -163,7 +163,7 @@ var allTeacher = function (req, res, next) {
     }
 };
 
-var teacherById = (req, res, next) => {
+var teacherById = function (req, res, next) {
     var sql = sqlMap.student.select_oneteacher;
     var addsql = req.body.teaNum;
     //var addsql = "1001"
@@ -179,7 +179,7 @@ var teacherById = (req, res, next) => {
     });
 };
 
-var chooseRegular = (req, res, next) => {
+var chooseRegular = function (req, res, next) {
     var data = {
         success: false
     }
@@ -233,7 +233,7 @@ var chooseRegular = (req, res, next) => {
     })
 };
 
-var chooseGraduate = (req, res, next) => {
+var chooseGraduate = function (req, res, next) {
     var data = {
         success: false
     }
@@ -247,7 +247,7 @@ var chooseGraduate = (req, res, next) => {
     var sql0 = sqlMap.student.update_teacher_graduate_isRedistribute;
     var sql1 = sqlMap.student.update_teacher_graduate_first;
     var sql2 = sqlMap.student.update_teacher_graduate_second;
-    query(sql0, [addsql.isRedistribute, addsql.stuID], (err, result) => {
+    query(sql0, [addsql.isRedistribute, addsql.stuID], function (err, result) {
         if (err) {
             console.log("[UPDATE ERRO]:", err.message);
             res.send(data);
@@ -255,14 +255,14 @@ var chooseGraduate = (req, res, next) => {
             console.log(1);
             if (addsql.firstChoice) {
 
-                query(sql1, [addsql.firstChoice, addsql.stuID], (err, result) => {
+                query(sql1, [addsql.firstChoice, addsql.stuID], function (err, result) {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
                         res.send(data);
                     } else {
                         console.log(1);
                         if (addsql.secondChoice) {
-                            query(sql2, [addsql.secondChoice, addsql.stuID], (err, result) => {
+                            query(sql2, [addsql.secondChoice, addsql.stuID], function (err, result) {
                                 if (err) {
                                     console.log("[UPDATE ERRO]:", err.message);
                                     res.send(data);
@@ -287,7 +287,7 @@ var chooseGraduate = (req, res, next) => {
     })
 };
 
-var selectedResult = (req, res, next) => {
+var selectedResult = function (req, res, next) {
     var data = {
         firstChoice: "",
         secondChoice: "",
@@ -369,7 +369,7 @@ var selectedResult = (req, res, next) => {
     });
 };
 
-var tutorResult = (req, res, next) => {
+var tutorResult = function (req, res, next) {
     var addsql = req.body;
     // var addsql = {
     //     stuID: '201706062629',
@@ -380,7 +380,7 @@ var tutorResult = (req, res, next) => {
     var sql2 = sqlMap.student.check_teacher_graduate;
 
     if (addsql.type == "regular") {
-        query(sql1, addsql.stuID, (err, result) => {
+        query(sql1, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERRO]:", err.message);
                 res.send(str);
@@ -396,7 +396,7 @@ var tutorResult = (req, res, next) => {
             }
         });
     } else if (addsql.type == "graduate") {
-        query(sql2, addsql.stuID, (err, result) => {
+        query(sql2, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERRO]:", err.message);
                 res.send(str);
@@ -414,20 +414,59 @@ var tutorResult = (req, res, next) => {
 
 };
 
-var writeinfo = (req, res, next) => {
-    var addsql = req.body;
+var writeinfo = function (req, res, next) {
+    //var addsql = req.body;
     var data = {
         success: false
     }
+    var addsql = {
+        stuID: 201706062629,
+        tutorType: "regular",
+        tableList: [{
+            name: "profileTable",
+            title: "学生个人简介表"
+        }, {
+            name: "choiceTable",
+        }],
+        profileTable: {
+            flag: true,
+            fileList: [{
+                url: "abcabcabcabcabcabcabcabc",
+                name: "caster.jpg",
+                status: "success"
+            }, {
+                url: "http://localhost:8080/downloadFile?filename=saidgihkdglha&oldname=va11halla.png",
+                name: "caster.jpg",
+                status: "success",
+                size: 1447144
+            }]
+        },
+        choiceTable: {
+            flag: true,
+            fileList: [{
+                url: "abcabcabcabcabcabcabcabc",
+                name: "caster.jpg",
+                "status": "success"
+            }]
+        }
+    }
     if (addsql.tutorType == "regular") {
-        var sql0 = sqlMap.student.update_file_profile_regelar;
-        var sql1 = sqlMap.student.update_file_choice_regelar;
-        query(sql0, [addsql.profileTable, addsql.stuID], (err, result) => {
+        var sql0 = sqlMap.student.update_file_tableList_regelar;
+        var sql1 = sqlMap.student.update_file_tableBody_regelar;
+        query(sql0, [JSON.stringify(addsql.tableList), addsql.stuID], (err, result) => {
             if (err) {
                 console.log("[UPDATE ERRO]:", err.message);
                 res.send(data);
             } else {
-                query(sql1, [addsql.choiceTable, addsql.stuID], (err, result) => {
+                var tableBody1 = "";
+
+                for (i = 0; i < addsql.tableList.length; i++) {
+                    tableBody1 = tableBody1 + addsql.tableList[i].name + ":" + JSON.stringify(addsql[addsql.tableList[i].name])
+                }
+                console.log(tableBody1);
+
+
+                query(sql1, [JSON.stringify(tableBody1), addsql.stuID], (err, result) => {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
                         res.send(data);
@@ -439,14 +478,18 @@ var writeinfo = (req, res, next) => {
             }
         })
     } else if (addsql.tutorType == "graduate") {
-        var sql2 = sqlMap.student.update_file_profile_graduate;
-        var sql3 = sqlMap.student.update_file_choice_graduate;
-        query(sql2, [addsql.profileTable, addsql.stuID], (err, result) => {
+        var sql2 = sqlMap.student.update_file_tableList_graduate;
+        var sql3 = sqlMap.student.update_file_tableBody_graduate;
+        query(sql2, [addsql.tableList, addsql.stuID], (err, result) => {
             if (err) {
                 console.log("[UPDATE ERRO]:", err.message);
                 res.send(data);
             } else {
-                query(sql3, [addsql.choiceTable, addsql.stuID], (err, result) => {
+                var tableBody2 = "";
+                for (i = 0; i < addsql.tableList.length; i++) {
+                    tableBody2 = tableBody2 + addsql.tableList[i].name + ":" + addsql[addsql.tableList[i].name]
+                }
+                query(sql3, [tableBody2, addsql.stuID], (err, result) => {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
                         res.send(data);
@@ -465,9 +508,7 @@ var writeinfo = (req, res, next) => {
 module.exports = {
     stulogin,
     changePass,
-    teacherByDepartment,
     teacherById,
-    selfInfo,
     allTeacher,
     selectedResult,
     tutorResult,
