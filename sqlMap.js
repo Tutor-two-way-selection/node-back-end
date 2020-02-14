@@ -64,10 +64,17 @@ var sqlMap = {
         //本科文件
         update_file_tableList_regelar: 'update regularchoice set tableList =? where stuNum=?',
         update_file_tableBody_regelar: 'update regularchoice set tableBody =? where stuNum=?',
+        select_file_tableList_regelar: 'select tableList from regularchoice where stuNum=?',
+        select_file_tableBody_regelar: 'select tableBody from regularchoice where stuNum=?',
+
+
 
         //毕业文件
         update_file_tableList_graduate: 'update graduatechoice set tableList =? where stuNum=?',
         update_file_tableBody_graduate: 'update graduatechoice set tableBody =? where stuNum=?',
+
+        select_file_tableList_graduate: 'select tableList from graduatechoice where stuNum=?',
+        select_file_tableBody_graduate: 'select tableBody from graduatechoice where stuNum=?',
     },
     //导师
     teacher: {

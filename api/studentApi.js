@@ -2,15 +2,15 @@ var query = require('../util');
 var sqlMap = require('../sqlMap');
 var stulogin = function (req, res, next) {
     var sql = sqlMap.student.select_stunum;
-    var addsql = req.body;
+    //var addsql = req.body;
     var $result = {
         success: 0,
         passChanged: 0,
     }
-    /*var addsql={
-        stuID:'201706062629',
-        stuPass:'1234',
-    };*/
+    var addsql = {
+        stuID: '201706062629',
+        stuPass: '1234',
+    };
     query(sql, addsql.stuID, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
@@ -19,7 +19,9 @@ var stulogin = function (req, res, next) {
             if (result[0]) {
                 //登录成功
                 var resultArray = result[0];
-                if (resultArray.stuPass == addsql.stuID) {
+                console.log(resultArray);
+
+                if (resultArray.stuPass == addsql.stuPass) {
                     $result.success = 1;
                     $result.passChanged = resultArray.passChanged;
                     res.send($result);
@@ -37,11 +39,11 @@ var stulogin = function (req, res, next) {
 
 var changePass = function (req, res, next) { //修改密码
     var sql = sqlMap.student.select_stunum;
-    var addsql = req.body;
-    /*var addsql={
-     stuID:'201706062629',
-     newPass:'1234',
-     };*/
+    //var addsql = req.body;
+    var addsql = {
+        stuID: '201706062629',
+        newPass: '1234',
+    };
     var data = {
         success: false
     }
@@ -299,7 +301,7 @@ var selectedResult = function (req, res, next) {
         type:'regular'
     };*/
     var sql0 = sqlMap.student.select_choice_regular_adjust;
-    query(sql0, addsql.stuID, (err, result) => {
+    query(sql0, addsql.stuID, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
             res.send(data);
@@ -307,7 +309,7 @@ var selectedResult = function (req, res, next) {
             data.isRedistribute = result[0];
             if (addsql.type == "regular") {
                 var sql1 = sqlMap.student.select_choice_regular_first;
-                query(sql1, addsql.stuID, (err, result) => {
+                query(sql1, addsql.stuID, function (err, result) {
                     if (err) {
                         console.log("[SELECT ERROR]:", err.message);
                         res.send(data);
@@ -315,7 +317,7 @@ var selectedResult = function (req, res, next) {
                         if (result[0]) {
                             data.firstChoice = result[0];
                             var sql2 = sqlMap.student.select_choice_regular_second;
-                            query(sql2, addsql.stuID, (err, result) => {
+                            query(sql2, addsql.stuID, function (err, result) {
                                 if (err) {
                                     console.log("[SELECT ERROR]:", err.message);
                                     res.send(data);
@@ -336,7 +338,7 @@ var selectedResult = function (req, res, next) {
                 })
             } else if (addsql.type == "graduate") {
                 var $sql1 = sqlMap.student.select_choice_graduate_first;
-                query($sql1, addsql.stuID, (err, result) => {
+                query($sql1, addsql.stuID, function (err, result) {
                     if (err) {
                         console.log("[SELECT ERROR]:", err.message);
                         res.send(data);
@@ -344,7 +346,7 @@ var selectedResult = function (req, res, next) {
                         if (result[0]) {
                             data.firstChoice = result[0];
                             var $sql2 = sqlMap.student.select_choice_graduate_second;
-                            query($sql2, addsql.stuID, (err, result) => {
+                            query($sql2, addsql.stuID, function (err, result) {
                                 if (err) {
                                     console.log("[SELECT ERROR]:", err.message);
                                     res.send(data);
@@ -370,29 +372,28 @@ var selectedResult = function (req, res, next) {
 };
 
 var tutorResult = function (req, res, next) {
-    var addsql = req.body;
-    // var addsql = {
-    //     stuID: '201706062629',
-    //     type: 'regular'
-    // };
+    //var addsql = req.body;
+    var addsql = {
+        stuID: '201706062629',
+        type: "regular"
+    };
     var str = "";
     var sql1 = sqlMap.student.check_teacher_regular;
     var sql2 = sqlMap.student.check_teacher_graduate;
-
     if (addsql.type == "regular") {
         query(sql1, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERRO]:", err.message);
                 res.send(str);
             } else {
+
                 if (result[0]) {
+
                     str = result[0];
                     res.send(str);
                 } else {
                     res.send(str)
-
                 }
-
             }
         });
     } else if (addsql.type == "graduate") {
@@ -407,11 +408,9 @@ var tutorResult = function (req, res, next) {
                 } else {
                     res.send(str)
                 }
-
             }
         });
     }
-
 };
 
 var writeinfo = function (req, res, next) {
@@ -453,20 +452,20 @@ var writeinfo = function (req, res, next) {
     if (addsql.tutorType == "regular") {
         var sql0 = sqlMap.student.update_file_tableList_regelar;
         var sql1 = sqlMap.student.update_file_tableBody_regelar;
-        query(sql0, [JSON.stringify(addsql.tableList), addsql.stuID], (err, result) => {
+        query(sql0, [JSON.stringify(addsql.tableList), addsql.stuID], function (err, result) {
             if (err) {
                 console.log("[UPDATE ERRO]:", err.message);
                 res.send(data);
             } else {
-                var tableBody1 = "";
+                var tableBody1 = {};
 
                 for (i = 0; i < addsql.tableList.length; i++) {
-                    tableBody1 = tableBody1 + addsql.tableList[i].name + ":" + JSON.stringify(addsql[addsql.tableList[i].name])
+                    tableBody1[addsql.tableList[i].name] = JSON.stringify(addsql[addsql.tableList[i].name])
                 }
                 console.log(tableBody1);
 
 
-                query(sql1, [JSON.stringify(tableBody1), addsql.stuID], (err, result) => {
+                query(sql1, [JSON.stringify(tableBody1), addsql.stuID], function (err, result) {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
                         res.send(data);
@@ -480,7 +479,7 @@ var writeinfo = function (req, res, next) {
     } else if (addsql.tutorType == "graduate") {
         var sql2 = sqlMap.student.update_file_tableList_graduate;
         var sql3 = sqlMap.student.update_file_tableBody_graduate;
-        query(sql2, [addsql.tableList, addsql.stuID], (err, result) => {
+        query(sql2, [addsql.tableList, addsql.stuID], function (err, result) {
             if (err) {
                 console.log("[UPDATE ERRO]:", err.message);
                 res.send(data);
@@ -489,7 +488,7 @@ var writeinfo = function (req, res, next) {
                 for (i = 0; i < addsql.tableList.length; i++) {
                     tableBody2 = tableBody2 + addsql.tableList[i].name + ":" + addsql[addsql.tableList[i].name]
                 }
-                query(sql3, [tableBody2, addsql.stuID], (err, result) => {
+                query(sql3, [tableBody2, addsql.stuID], function (err, result) {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
                         res.send(data);
@@ -505,6 +504,78 @@ var writeinfo = function (req, res, next) {
     }
 }
 
+var readinfo = function (req, res, next) {
+
+    //var addsql = req.body;
+    var addsql = {
+        stuID: "201706062629",
+        tutorType: "regular"
+    }
+    var data = {
+        tableList: ""
+    }
+    if (addsql.tutorType == "regular") {
+        var sql0 = sqlMap.student.select_file_tableList_regelar;
+        var sql1 = sqlMap.student.select_file_tableBody_regelar;
+        query(sql0, addsql.stuID, function (err, result) {
+            if (err) {
+                console.log("[SELECT ERROR]:", err.message);
+                res.send(data);
+            } else {
+                data.tableList = JSON.parse(result[0].tableList);
+                var list0 = JSON.parse(result[0].tableList)
+                query(sql1, addsql.stuID, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        res.send(data);
+                    } else {
+                        var body = JSON.parse(result[0].tableBody)
+                        //for (i = 0; i < list0.length; i++) {
+                        //}
+                        for (i = 0; i < list0.length; i++) {
+                            data[list0[i].name] = JSON.parse(body[list0[i].name])
+                        }
+                        res.send(data);
+                    }
+                })
+            }
+        })
+    } else if (addsql.tutorType == "graduate") {
+
+        var sql2 = sqlMap.student.select_file_tableList_graduate;
+        var sql3 = sqlMap.student.select_file_tableBody_graduate;
+        query(sql2, addsql.stuID, function (err, result) {
+            if (err) {
+                console.log("[SELECT ERROR]:", err.message);
+                res.send(data);
+            } else {
+                data.tableList = JSON.parse(result[0].tableList);
+                var list0 = JSON.parse(result[0].tableList)
+                query(sql3, addsql.stuID, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        res.send(data);
+                    } else {
+                        var body = JSON.parse(result[0].tableBody)
+                        //for (i = 0; i < list0.length; i++) {
+                        //}
+                        for (i = 0; i < list0.length; i++) {
+                            data[list0[i].name] = body[list0[i].name]
+                        }
+                        res.send(data);
+                    }
+                })
+            }
+        })
+
+
+
+
+
+
+    }
+}
+
 module.exports = {
     stulogin,
     changePass,
@@ -514,5 +585,7 @@ module.exports = {
     tutorResult,
     chooseRegular,
     chooseGraduate,
+    readinfo,
     writeinfo,
+
 }

@@ -14,4 +14,5 @@ router.get("/graduate", studentservices.chooseGraduate)
 router.get("/mytutor", studentservices.tutorResult)
 router.get("/info", studentservices.writeinfo);
 router.get("/selected", studentservices.selectedResult)
+router.get("/queryinfo", studentservices.readinfo)
 module.exports = router;
