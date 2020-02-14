@@ -78,6 +78,8 @@ var sqlMap = {
     },
     //导师
     teacher: {
+        select_teacheracount: 'select * from teaaccount where id = ?',
+        update_teacher_selfinfo: 'update teacher set name=?,department=?,search=?,contact=? where id=?'
 
 
 

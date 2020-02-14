@@ -5,7 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var students = require('./routes/students');
+var student = require('./routes/student');
+var teacher = require('./routes/teacher');
 var app = express();
 var fs = require("fs")
 var multer = require('multer'); //引入multer
@@ -32,7 +33,8 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/student', students);
+app.use('/student', student);
+app.use('/teacher', teacher);
 
 // catch 404 and forward to error handler
 app.use('/downloadFile', (req, res, next) => {
