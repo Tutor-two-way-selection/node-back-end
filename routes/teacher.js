@@ -10,4 +10,5 @@ router.get("/info", teacherservices.info)
 router.get("/changeinfo", teacherservices.changeinfo)
 router.get("/stuinfo", teacherservices.stuinfo)
 router.get("/selectstu", teacherservices.selectstu)
+router.get("/accepted",teacherservices.accepted)
 module.exports = router
