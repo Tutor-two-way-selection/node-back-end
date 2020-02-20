@@ -1,17 +1,18 @@
-var express = require('express');
-var path = require('path');
+var express = require("express");
+var path = require("path");
 
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var logger = require("morgan");
+var cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
 
-var student = require('./routes/student');
-var teacher = require('./routes/teacher');
+var student = require("./routes/student");
+var teacher = require("./routes/teacher");
+var admin = require("./routes/admin");
 var app = express();
-var fs = require("fs")
-var multer = require('multer'); //引入multer
+var fs = require("fs");
+var multer = require("multer"); //引入multer
 var upload = multer({
-  dest: 'uploads/'
+  dest: "uploads/"
 }); //设置上传文件存储地址
 // view engine setup
 
@@ -25,51 +26,50 @@ app.all("*", function (req, res, next) {
   res.header("Content-Type", "application/json;charset=utf-8");
   next();
 });
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/student', student);
-app.use('/teacher', teacher);
-
+app.use("/student", student);
+app.use("/teacher", teacher);
+app.use("/admin", admin)
 // catch 404 and forward to error handler
-app.use('/downloadFile', (req, res, next) => {
+app.use("/downloadFile", (req, res, next) => {
   var filename = req.query.filename;
   var oldname = req.query.oldname;
-  var file = 'uploads/' + filename;
+  var file = "uploads/" + filename;
   res.writeHead(200, {
-    'Content-Type': 'application/octet-stream', //告诉浏览器这是一个二进制文件
-    'Content-Disposition': 'attachment; filename=' + encodeURI(oldname), //告诉浏览器这是一个需要下载的文件
+    "Content-Type": "application/octet-stream", //告诉浏览器这是一个二进制文件
+    "Content-Disposition": "attachment; filename=" + encodeURI(oldname) //告诉浏览器这是一个需要下载的文件
   }); //设置响应头
   var readStream = fs.createReadStream(file); //得到文件输入流
 
-  readStream.on('data', (chunk) => {
-    res.write(chunk, 'binary'); //文档内容以二进制的格式写到response的输出流
+  readStream.on("data", chunk => {
+    res.write(chunk, "binary"); //文档内容以二进制的格式写到response的输出流
   });
-  readStream.on('end', () => {
+  readStream.on("end", () => {
     res.end();
-  })
-})
-app.use('/onlineRead',
-  (req, res, next) => {
-
-    var urlarr = req.url.split('/');
-    var filename = urlarr[urlarr.length - 1]
-    var file = 'uploads/' + filename;
-    var stats = fs.statSync(file);
-    if (stats.isFile())
-      res.set({
-        'Content-Type': 'application/octet-stream',
-        'Content-Disposition': 'attachment; filename=' + filename,
-        'Content-Length': stats.size
-      });
-    fs.createReadStream(file).pipe(res);
-  }
-)
+  });
+});
+app.use("/onlineRead", (req, res, next) => {
+  var urlarr = req.url.split("/");
+  var filename = urlarr[urlarr.length - 1];
+  var file = "uploads/" + filename;
+  var stats = fs.statSync(file);
+  if (stats.isFile())
+    res.set({
+      "Content-Type": "application/octet-stream",
+      "Content-Disposition": "attachment; filename=" + filename,
+      "Content-Length": stats.size
+    });
+  fs.createReadStream(file).pipe(res);
+});
 // res.writeHead(200, {
 //   'Content-Type': 'application/octet-stream', //告诉浏览器这是一个二进制文件
 //   'Content-Disposition': 'attachment; filename=' + encodeURI(filename), //告诉浏览器这是一个需要下载的文件
@@ -83,33 +83,33 @@ app.use('/onlineRead',
 //   res.end();
 // })
 
-
-app.use('/uploadFile', upload.single('file'), (req, res, next) => {
+app.use("/uploadFile", upload.single("file"), (req, res, next) => {
   let ret = {};
-  ret['code'] = 20000;
+  ret["code"] = 20000;
   var file = req.file;
   console.log(file);
   if (file) {
-
-    var fileNameArr = file.originalname.split('.');
+    var fileNameArr = file.originalname.split(".");
     var suffix = fileNameArr[fileNameArr.length - 1];
     console.log(fileNameArr);
     console.log(suffix);
 
     //文件重命名
-    fs.renameSync('uploads/' + file.filename, `uploads/${file.filename}.${suffix}`);
-    file['newfilename'] = `${file.filename}.${suffix}`;
+    fs.renameSync(
+      "uploads/" + file.filename,
+      `uploads/${file.filename}.${suffix}`
+    );
+    file["newfilename"] = `${file.filename}.${suffix}`;
   }
-  ret['file'] = file;
+  ret["file"] = file;
   //console.log(ret);
   res.send(ret);
-})
+});
 
 app.use(function (req, res, next) {
-  var err = new Error('Not Found');
+  var err = new Error("Not Found");
   err.status = 404;
   next(err);
 });
-
 
 module.exports = app;

@@ -45,15 +45,15 @@ var sqlMap = {
 
 
         //本科导师选择
-        update_teacher_regular_first: "update regularchoice set idFirst = ?,statusFirst='待确认' where stuNum =?",
-        update_teacher_regular_second: "update regularchoice set idSecond = ?,statusSecond='待确认' where stuNum =?",
+        update_teacher_regular_first: "update regularchoice set idFirst = ?,statusFirst=2 where stuNum =?",
+        update_teacher_regular_second: "update regularchoice set idSecond = ?,statusSecond=2 where stuNum =?",
         update_teacher_regular_isRedistribute: "update regularchoice set adjust =? where stuNum =?",
 
 
 
         //毕业导师选择
-        update_teacher_graduate_first: "update graduatechoice set idFirst = ? ,statusFirst='待确认' where stuNum =?",
-        update_teacher_graduate_second: "update graduatechoice set idSecond = ?,statusSecond='待确认' where stuNum =?",
+        update_teacher_graduate_first: "update graduatechoice set idFirst = ? ,statusFirst=2 where stuNum =?",
+        update_teacher_graduate_second: "update graduatechoice set idSecond = ?,statusSecond=2 where stuNum =?",
         update_teacher_graduate_isRedistribute: 'update graduatechoice set adjust =? where stuNum =?',
 
         //查看自己的导师
@@ -62,10 +62,10 @@ var sqlMap = {
 
 
         //本科文件
-        update_file_tableList_regelar: 'update regularchoice set tableList =? where stuNum=?',
-        update_file_tableBody_regelar: 'update regularchoice set tableBody =? where stuNum=?',
-        select_file_tableList_regelar: 'select tableList from regularchoice where stuNum=?',
-        select_file_tableBody_regelar: 'select tableBody from regularchoice where stuNum=?',
+        update_file_tableList_regular: 'update regularchoice set tableList =? where stuNum=?',
+        update_file_tableBody_regular: 'update regularchoice set tableBody =? where stuNum=?',
+        select_file_tableList_regular: 'select tableList from regularchoice where stuNum=?',
+        select_file_tableBody_regular: 'select tableBody from regularchoice where stuNum=?',
 
 
 
@@ -81,30 +81,30 @@ var sqlMap = {
         select_teacheracount: 'select * from teaaccount where id = ?',
         update_teacher_selfinfo: 'update teacher set name=?,department=?,search=?,contact=? where id=?',
         //老师-志愿关系
-        select_teafirst_regular:'select * from regularchoice where stuNum=? and idFirst=?',
-        select_teasecond_regular:'select * from regularchoice where stuNum=? and idSecond=?',
-        select_teafirst_graduate:'select * from graduatechoice where stuNum=? and idFirst=?',
-        select_teasecond_graduate:'select * from graduatechoice where stuNum=? and idSecond=?',
+        select_teafirst_regular: 'select * from regularchoice where stuNum=? and idFirst=?',
+        select_teasecond_regular: 'select * from regularchoice where stuNum=? and idSecond=?',
+        select_teafirst_graduate: 'select * from graduatechoice where stuNum=? and idFirst=?',
+        select_teasecond_graduate: 'select * from graduatechoice where stuNum=? and idSecond=?',
         //查询？志愿学生信息
-        select_stu_first_regular:'select regularchoice.stuNum,stuName,tableBody from regularchoice,student where idFirst=? and regularchoice.stuNum=student.stuNum',
-        select_stu_second_regular:'select regularchoice.stuNum,stuName,tableBody  from regularchoice,student where idSecond=? and regularchoice.stuNum=student.stuNum',
-        select_stu_first_graduate:'select graduatechoice.stuNum,stuName,tableBody from graduatechoice,student where idFirst=? and graduatechoice.stuNum=student.stuNum',
-        select_stu_second_graduate:'select graduatechoice.stuNum,stuName,tableBody from graduatechoice,student where idSecond=? and graduatechoice.stuNum=student.stuNum',
-        select_tablelist_regular:'select tableList from regularchoice',
-        select_tablelist_graduate:'select tableList from graduatechoice',
+        select_stu_first_regular: 'select regularchoice.stuNum,stuName,tableBody from regularchoice,student where idFirst=? and regularchoice.stuNum=student.stuNum',
+        select_stu_second_regular: 'select regularchoice.stuNum,stuName,tableBody  from regularchoice,student where idSecond=? and regularchoice.stuNum=student.stuNum',
+        select_stu_first_graduate: 'select graduatechoice.stuNum,stuName,tableBody from graduatechoice,student where idFirst=? and graduatechoice.stuNum=student.stuNum',
+        select_stu_second_graduate: 'select graduatechoice.stuNum,stuName,tableBody from graduatechoice,student where idSecond=? and graduatechoice.stuNum=student.stuNum',
+        select_tablelist_regular: 'select tableList from regularchoice',
+        select_tablelist_graduate: 'select tableList from graduatechoice',
         //拒收或者接收
-        receive_first_regular:'update regularchoice set statusFirst="接收" where  stuNum=?',
-        receive_second_regular:'update regularchoice set statusSecond="接收" where  stuNum=?',
-        refuse_first_regular:'update regularchoice set statusFirst="不接收" where  stuNum=?',
-        refuse_second_regular:'update regularchoice set statusSecond="不接收" where  stuNum=?',
-        receive_first_graduate:'update graduatechoice set statusFirst="接收" where  stuNum=?',
-        receive_second_graduate:'update graduatechoice set statusSecond="接收" where  stuNum=?',
-        refuse_first_graduate:'update graduatechoice set statusFirst="不接收" where  stuNum=?',
-        refuse_second_graduate:'update graduatechoice set statusSecond="不接收" where  stuNum=?',
+        receive_first_regular: 'update regularchoice set statusFirst="接收" where  stuNum=?',
+        receive_second_regular: 'update regularchoice set statusSecond="接收" where  stuNum=?',
+        refuse_first_regular: 'update regularchoice set statusFirst="不接收" where  stuNum=?',
+        refuse_second_regular: 'update regularchoice set statusSecond="不接收" where  stuNum=?',
+        receive_first_graduate: 'update graduatechoice set statusFirst="接收" where  stuNum=?',
+        receive_second_graduate: 'update graduatechoice set statusSecond="接收" where  stuNum=?',
+        refuse_first_graduate: 'update graduatechoice set statusFirst="不接收" where  stuNum=?',
+        refuse_second_graduate: 'update graduatechoice set statusSecond="不接收" where  stuNum=?',
 
         //管理员确认后查看学生信息
-        select_result_regular:'select stuName,regularchoice.stuNum,tableBody from regularchoice,student where regularchoice.stuNum=student.stuNum and regularchoice.stuNum in (select stuNum from result where regularid=?)',
-        select_result_graduate:'select stuName,graduatechoice.stuNum,tableBody from graduatechoice,student where graduatechoice.stuNum=student.stuNum and graduatechoice.stuNum in (select stuNum from result where graduateid=?)'
+        select_result_regular: 'select stuName,regularchoice.stuNum,tableBody from regularchoice,student where regularchoice.stuNum=student.stuNum and regularchoice.stuNum in (select stuNum from result where regularid=?)',
+        select_result_graduate: 'select stuName,graduatechoice.stuNum,tableBody from graduatechoice,student where graduatechoice.stuNum=student.stuNum and graduatechoice.stuNum in (select stuNum from result where graduateid=?)'
         //select_result_regular:'select stuNum from result where regularid=?'
 
 
@@ -118,7 +118,9 @@ var sqlMap = {
     },
     //管理员
     admin: {
-
+        //登录
+        login: 'select * from admin where adminNum = ?',
+        stulist: 'select * from student where stuGrade in(select adminGrade from admin where adminNum = ?)'
     }
 
 }

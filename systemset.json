@@ -1,0 +1,9 @@
+{
+    "tableList": [{
+        "name": "profileTable",
+        "title": "学生个人简介表"
+    }, {
+        "name": "choiceTable"
+    }],
+    "batch": "1"
+}zz

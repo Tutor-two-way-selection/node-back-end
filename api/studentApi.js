@@ -460,7 +460,7 @@ var writeinfo = function (req, res, next) {
                 var tableBody1 = {};
 
                 for (i = 0; i < addsql.tableList.length; i++) {
-                    tableBody1[addsql.tableList[i].name] = JSON.stringify(addsql[addsql.tableList[i].name])
+                    tableBody1[addsql.tableList[i].name] = addsql[addsql.tableList[i].name]
                 }
                 console.log(tableBody1);
 
@@ -484,11 +484,11 @@ var writeinfo = function (req, res, next) {
                 console.log("[UPDATE ERRO]:", err.message);
                 res.send(data);
             } else {
-                var tableBody2 = "";
+                var tableBody2 = {};
                 for (i = 0; i < addsql.tableList.length; i++) {
-                    tableBody2 = tableBody2 + addsql.tableList[i].name + ":" + addsql[addsql.tableList[i].name]
+                    tableBody2[addsql.tableList[i].name] = addsql[addsql.tableList[i].name]
                 }
-                query(sql3, [tableBody2, addsql.stuID], function (err, result) {
+                query(sql3, [JSON.stringify(tableBody2), addsql.stuID], function (err, result) {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
                         res.send(data);
@@ -533,7 +533,7 @@ var readinfo = function (req, res, next) {
                         //for (i = 0; i < list0.length; i++) {
                         //}
                         for (i = 0; i < list0.length; i++) {
-                            data[list0[i].name] = JSON.parse(body[list0[i].name])
+                            data[list0[i].name] = body[list0[i].name]
                         }
                         res.send(data);
                     }
