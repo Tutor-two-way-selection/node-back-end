@@ -1,9 +1,10 @@
 var query = require('../util');
 var sqlMap = require('../sqlMap');
-var login = function (req, res, next) {
+var systemset = require("../systemset.json");
+var login = function (req, res) {
     var sql = sqlMap.teacher.select_teacheracount;
     //var addsql = req.body;
-    var $result = {
+    var data = {
         success: false,
     }
     var addsql = {
@@ -13,41 +14,44 @@ var login = function (req, res, next) {
     query(sql, addsql.teaNum, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
-            res.send($result);
+            data.err = "服务器错误";
+            res.send(data);
         } else {
             if (result[0]) {
                 //登录成功
                 var resultArray = result[0];
                 console.log(resultArray);
-                if (resultArray.pass == addsql.teaPass) {
-                    $result.success = true;
-                    res.send($result);
+                if (resultArray.pass === addsql.teaPass) {
+                    data.success = true;
+                    res.send(data);
                 } else {
-                    $result.success = false;
-                    res.send($result);
+                    data.success = false;
+                    data.err = "密码不正确";
+                    res.send(data);
                 }
             } else {
-                $result.success = false;
-                res.send($result);
+                data.success = false;
+                data.err = "用户名不正确";
+                res.send(data);
             }
         }
     });
 };
-var info = function (req, res, next) {
+var info = function (req, res) {
     var addsql = {
         teaID: '1001'
-    }
+    };
     var sql = sqlMap.student.select_oneteacher;
     query(sql, addsql.teaID, function (err, result) {
-
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
+
         } else {
-            res.send(result[0])
+            res.send(result[0]);
         }
     })
 }
-var changeinfo = function (req, res, next) {
+var changeinfo = function (req, res) {
     var addsql = {
         teaID: '1001',
         name: 'hcf',
@@ -62,6 +66,7 @@ var changeinfo = function (req, res, next) {
     query(sql, [addsql.name, addsql.department, addsql.search, addsql.contact, addsql.teaID], function (err, result) {
         if (err) {
             console.log("[UPDATE ERROR]:", err.message);
+            data.err = "服务器错误";
             res.send(data);
         } else {
             data.success = true;
@@ -69,174 +74,253 @@ var changeinfo = function (req, res, next) {
         }
     })
 }
-var stuinfo=function(req,res,next){
+var stuinfo = function (req, res) {
     //var addsql=req.body;
-    var addsql={
-        teaID:'1001',
-        type:'regular',
-        batch:1,
+    var addsql = {
+        teaID: '1001',
+        type: 'regular',
+        batch: 2,
     }
-    var data={
-        tableList:"",
-        stuList:""
+    var data = {
+        tableList: systemset.tableList,
+        stuList: ""
     }
-    if(addsql.type==="regular"){
-        var rsql=sqlMap.teacher.select_tablelist_regular;
-        query(rsql,function(err,ret){
-            if(err){
-                console.log('[SELECT ERRO]:',err.message);
-                res.send(data);
-            }else{
-                data.tableList=ret[0];
-            }
-        })
-        if(batch==1){
-            var sql=sqlMap.teacher.select_stu_first_regular;
-            query(sql,addsql.teaID,function(err,result){
-                if(err){
-                    console.log('[SELECT ERRO]:',err.message);
+    var sql1 = sqlMap.student.select_file_tableBody_regular;
+    var sql2 = sqlMap.student.select_file_tableBody_graduate;
+    if (addsql.type === "regular") {
+        if (addsql.batch == 1) {
+            var sql3 = sqlMap.teacher.select_stu_first_regular;
+            query(sql3, addsql.teaID, function (err, result) {
+                if (err) {
+                    console.log('[SELECT ERRO]:', err.message);
+                    data.err = "服务器错误"
                     res.send(data);
-                }else{
-                    data.stuList=result;
-                    res.send(data);
-                }
-            })
-        }else{
-            var sql0=sqlMap.teacher.select_stu_second_regular;
-            query(sql0,addsql.teaID,function(err,result){
-                if(err){
-                    console.log('[SELECT ERRO]:',err.message);
-                    res.send(data);
-                }else{
-                    data.stuList=result;
-                    res.send(data);
-                }
-            })
+                } else {
+                    data.stuList = result;
+                    if (data.stuList[0]) {
+                        data.stuList.forEach(function (d, i) {
+                            query(sql1, d.stuNum, function (err, result) {
+                                if (err) {
+                                    console.log('[SELECT ERRO]:', err.message);
+                                    data.err = "服务器错误"
+                                    res.send(data);
+                                } else {
+                                    var body = JSON.parse(result[0].tableBody);
+                                    for (var j = 0; j < data.tableList.length; j++) {
+                                        d[data.tableList[j].name] = body[data.tableList[j].name];
+                                        if (i == data.stuList.length - 1 && j == systemset.tableList.length - 1) {
+                                            res.send(data)
+                                        }
+                                    }
 
-        }
-    }else{
-        var gsql=sqlMap.teacher.select_tablelist_graduate;
-        query(gsql,function(err,ret){
-            if(err){
-                console.log('[SELECT ERRO]:',err.message);
-                res.send(data);
-            }else{
-                data.tableList=ret[0];
-            }
-        })
-        if(batch==1){
-            var sql1=sqlMap.teacher.select_stu_first_graduate;
-            query(sql1,addsql.teaID,function(err,result){
-                if(err){
-                    console.log('[SELECT ERRO]:',err.message);
-                    res.send(data);
-                }else{
-                    data.stuList=result;
-                    res.send(data);
+                                }
+                            })
+                        });
+                    } else {
+                        res.send(data)
+                    }
                 }
             })
-        }else{
-            var sql2=sqlMap.teacher.select_stu_second_graduate;
-            query(sql0,addsql.teaID,function(err,result){
-                if(err){
-                    console.log('[SELECT ERRO]:',err.message);
+        } else {
+            var sql4 = sqlMap.teacher.select_stu_second_regular;
+            query(sql4, addsql.teaID, function (err, result) {
+                if (err) {
+                    console.log('[SELECT ERRO]:', err.message);
+                    data.err = "服务器错误"
                     res.send(data);
-                }else{
-                    data.stuList=result;
-                    res.send(data);
-                }
-            })
+                } else {
+                    data.stuList = result;
+                    if (data.stuList[0]) {
 
+                        data.stuList.forEach(function (d, i) {
+                            query(sql1, d.stuNum, function (err, result) {
+                                if (err) {
+                                    console.log('[SELECT ERRO]:', err.message);
+                                    data.err = "服务器错误"
+                                    res.send(data);
+                                } else {
+                                    var body = JSON.parse(result[0].tableBody);
+                                    for (var j = 0; j < data.tableList.length; j++) {
+                                        d[data.tableList[j].name] = body[data.tableList[j].name];
+                                        if (i == data.stuList.length - 1 && j == systemset.tableList.length - 1) {
+                                            res.send(data)
+                                        }
+                                    }
+
+                                }
+                            })
+                        });
+                    } else {
+                        res.send(data)
+                    }
+                }
+            })
         }
+    } else {
+
+        if (addsql.batch == 1) {
+            var sql5 = sqlMap.teacher.select_stu_first_graduate;
+            query(sql5, addsql.teaID, function (err, result) {
+                if (err) {
+                    console.log('[SELECT ERRO]:', err.message);
+                    data.err = "服务器错误"
+                    res.send(data);
+                } else {
+                    data.stuList = result;
+                    if (data.stuList[0]) {
+                        data.stuList.forEach(function (d, i) {
+                            query(sql2, d.stuNum, function (err, result) {
+                                if (err) {
+                                    console.log('[SELECT ERRO]:', err.message);
+                                    data.err = "服务器错误"
+                                    res.send(data);
+                                } else {
+                                    var body = JSON.parse(result[0].tableBody);
+                                    for (var j = 0; j < data.tableList.length; j++) {
+                                        d[data.tableList[j].name] = body[data.tableList[j].name];
+                                        if (i == data.stuList.length - 1 && j == systemset.tableList.length - 1) {
+                                            res.send(data)
+                                        }
+                                    }
+
+                                }
+                            })
+                        });
+                    } else {
+                        res.send(data)
+                    }
+                }
+            })
+        } else {
+            var sql6 = sqlMap.teacher.select_stu_second_graduate;
+            query(sql6, addsql.teaID, function (err, result) {
+                if (err) {
+                    console.log('[SELECT ERRO]:', err.message);
+                    data.err = "服务器错误"
+                    res.send(data);
+                } else {
+                    data.stuList = result;
+                    if (data.stuList[0]) {
+
+                        data.stuList.forEach(function (d, i) {
+                            query(sql2, d.stuNum, function (err, result) {
+                                if (err) {
+                                    console.log('[SELECT ERRO]:', err.message);
+                                    data.err = "服务器错误"
+                                    res.send(data);
+                                } else {
+                                    var body = JSON.parse(result[0].tableBody);
+                                    for (var j = 0; j < data.tableList.length; j++) {
+                                        d[data.tableList[j].name] = body[data.tableList[j].name];
+                                        if (i == data.stuList.length - 1 && j == systemset.tableList.length - 1) {
+                                            res.send(data)
+                                        }
+                                    }
+
+                                }
+                            })
+                        });
+                    } else {
+                        res.send(data)
+                    }
+                }
+            })
+        }
+
+
+
+
+
+
     }
-    
+
+
 }
-var selectstu=function(req,res,next){
+var selectstu = function (req, res) {
     //var addsql=req.body;
-    var addsql={
+    var addsql = {
         teaID: "1001",
-        type:"regular",
-        selStuList:[{
-            stuID:"201701010101",
-            recept:true
-        },{
-            stuID:"201701010102",
-            recept:false
+        type: "regular",
+        selStuList: [{
+            stuID: "201701010101",
+            recept: true
+        }, {
+            stuID: "201701010102",
+            recept: false
         }]
     }
-    var data={
-        success:true
+    var data = {
+        success: true
     }
     //先查询这个老师是第一志愿还是第二志愿老师
-    var rsql1=sqlMap.teacher.select_teafirst_regular;
-    var rsql2=sqlMap.teacher.select_teasecond_regular;
+    var rsql1 = sqlMap.teacher.select_teafirst_regular;
+    var rsql2 = sqlMap.teacher.select_teasecond_regular;
 
-    var gsql1=sqlMap.teacher.select_teafirst_graduate;
-    var gsql2=sqlMap.teacher.select_teasecond_graduate;
+    var gsql1 = sqlMap.teacher.select_teafirst_graduate;
+    var gsql2 = sqlMap.teacher.select_teasecond_graduate;
     //如果是第一志愿则修改第一志愿
-    var rsql11=sqlMap.teacher.receive_first_regular;
-    var rsql10=sqlMap.teacher.refuse_first_regular;
-    var rsql21=sqlMap.teacher.receive_second_regular;
-    var rsql20=sqlMap.teacher.refuse_second_regular;
+    var rsql11 = sqlMap.teacher.receive_first_regular;
+    var rsql10 = sqlMap.teacher.refuse_first_regular;
+    var rsql21 = sqlMap.teacher.receive_second_regular;
+    var rsql20 = sqlMap.teacher.refuse_second_regular;
 
-    var gsql11=sqlMap.teacher.receive_first_graduate;
-    var gsql10=sqlMap.teacher.refuse_first_graduate;
-    var gsql21=sqlMap.teacher.receive_second_graduate;
-    var gsql20=sqlMap.teacher.refuse_second_graduate;
-    
+    var gsql11 = sqlMap.teacher.receive_first_graduate;
+    var gsql10 = sqlMap.teacher.refuse_first_graduate;
+    var gsql21 = sqlMap.teacher.receive_second_graduate;
+    var gsql20 = sqlMap.teacher.refuse_second_graduate;
 
-    if(addsql.type==="regular"){
-        for(var i=0;i<addsql.selStuList.length;i++){    
-            var ifRecept=addsql.selStuList[i].recept;
-            var stuNum=addsql.selStuList[i].stuID;   
-            query(rsql1,addsql.teaID,function(err,result){
-                if(err){
-                    console.log('[SELECT ERRO]:',err.message);
-                    data.success=false;
+
+    if (addsql.type === "regular") {
+        for (let i = 0; i < addsql.selStuList.length; i++) {
+            let ifRecept = addsql.selStuList[i].recept;
+            let stuNum = addsql.selStuList[i].stuID;
+            query(rsql1, addsql.teaID, function (err, result) {
+                if (err) {
+                    console.log('[SELECT ERRO]:', err.message);
+                    data.success = false;
                     res.send(data);
-                }
-                else{
+                } else {
                     //如果在第一志愿找不到那么找第二志愿
-                    if(result[0]===undefined){
-                        query(rsql2,addsql.teaID,function(err,result){
-                            if(err){
-                                console.log('[SELECT ERRO]:',err.message);
-                                data.success=false;
+                    if (result[0] === undefined) {
+                        query(rsql2, addsql.teaID, function (err, result) {
+                            if (err) {
+                                console.log('[SELECT ERRO]:', err.message);
+                                data.success = false;
                                 res.send(data);
-                            }else{
-                                if(ifRecept==true){
-                                    query(rsql21,stuNum,function(err,ret){
-                                        if(err){
-                                            console.log('[UPDATE ERRO]:',err.message);
-                                            data.success=false;
+                            } else {
+                                if (ifRecept == true) {
+                                    query(rsql21, stuNum, function (err, ret) {
+                                        if (err) {
+                                            console.log('[UPDATE ERRO]:', err.message);
+                                            data.success = false;
                                             res.send(data);
                                         }
                                     })
-                                }else{
-                                    query(rsql20,stuNum,function(err,ret){
-                                        if(err){
-                                            console.log('[UPDATE ERRO]:',err.message);
-                                            data.success=false;
+                                } else {
+                                    query(rsql20, stuNum, function (err, ret) {
+                                        if (err) {
+                                            console.log('[UPDATE ERRO]:', err.message);
+                                            data.success = false;
                                             res.send(data);
                                         }
                                     })
                                 }
                             }
                         })
-                    }else{
-                        if(ifRecept==true){
-                            query(rsql11,stuNum,function(err,ret){
-                                if(err){
-                                    console.log('[UPDATE ERRO]:',err.message);
-                                    data.success=false;
+                    } else {
+                        if (ifRecept == true) {
+                            query(rsql11, stuNum, function (err, ret) {
+                                if (err) {
+                                    console.log('[UPDATE ERRO]:', err.message);
+                                    data.success = false;
                                     res.send(data);
                                 }
                             })
-                        }else{
-                            query(rsql10,stuNum,function(err,ret){
-                                if(err){
-                                    console.log('[UPDATE ERRO]:',err.message);
-                                    data.success=false;
+                        } else {
+                            query(rsql10, stuNum, function (err, ret) {
+                                if (err) {
+                                    console.log('[UPDATE ERRO]:', err.message);
+                                    data.success = false;
                                     res.send(data);
                                 }
                             })
@@ -246,58 +330,57 @@ var selectstu=function(req,res,next){
             })
         }
         res.send(data);
-    }else{
-        for(var i=0;i<addsql.selStuList.length;i++){    
-            var ifRecept=addsql.selStuList[i].recept;
-            var stuNum=addsql.selStuList[i].stuID;   
-            query(gsql1,addsql.teaID,function(err,result){
-                if(err){
-                    console.log('[SELECT ERRO]:',err.message);
-                    data.success=false;
+    } else {
+        for (let i = 0; i < addsql.selStuList.length; i++) {
+            let ifRecept = addsql.selStuList[i].recept;
+            let stuNum = addsql.selStuList[i].stuID;
+            query(gsql1, addsql.teaID, function (err, result) {
+                if (err) {
+                    console.log('[SELECT ERRO]:', err.message);
+                    data.success = false;
                     res.send(data);
-                }
-                else{
+                } else {
                     //如果在第一志愿找不到那么找第二志愿
-                    if(result[0]===undefined){
-                        query(gsql2,addsql.teaID,function(err,result){
-                            if(err){
-                                console.log('[SELECT ERRO]:',err.message);
-                                data.success=false;
+                    if (result[0] === undefined) {
+                        query(gsql2, addsql.teaID, function (err, result) {
+                            if (err) {
+                                console.log('[SELECT ERRO]:', err.message);
+                                data.success = false;
                                 res.send(data);
-                            }else{
-                                if(ifRecept==true){
-                                    query(gsql21,stuNum,function(err,ret){
-                                        if(err){
-                                            console.log('[UPDATE ERRO]:',err.message);
-                                            data.success=false;
+                            } else {
+                                if (ifRecept == true) {
+                                    query(gsql21, stuNum, function (err, ret) {
+                                        if (err) {
+                                            console.log('[UPDATE ERRO]:', err.message);
+                                            data.success = false;
                                             res.send(data);
                                         }
                                     })
-                                }else{
-                                    query(gsql20,stuNum,function(err,ret){
-                                        if(err){
-                                            console.log('[UPDATE ERRO]:',err.message);
-                                            data.success=false;
+                                } else {
+                                    query(gsql20, stuNum, function (err, ret) {
+                                        if (err) {
+                                            console.log('[UPDATE ERRO]:', err.message);
+                                            data.success = false;
                                             res.send(data);
                                         }
                                     })
                                 }
                             }
                         })
-                    }else{
-                        if(ifRecept==true){
-                            query(gsql11,stuNum,function(err,ret){
-                                if(err){
-                                    console.log('[UPDATE ERRO]:',err.message);
-                                    data.success=false;
+                    } else {
+                        if (ifRecept == true) {
+                            query(gsql11, stuNum, function (err, ret) {
+                                if (err) {
+                                    console.log('[UPDATE ERRO]:', err.message);
+                                    data.success = false;
                                     res.send(data);
                                 }
                             })
-                        }else{
-                            query(gsql10,stuNum,function(err,ret){
-                                if(err){
-                                    console.log('[UPDATE ERRO]:',err.message);
-                                    data.success=false;
+                        } else {
+                            query(gsql10, stuNum, function (err, ret) {
+                                if (err) {
+                                    console.log('[UPDATE ERRO]:', err.message);
+                                    data.success = false;
                                     res.send(data);
                                 }
                             })
@@ -308,58 +391,83 @@ var selectstu=function(req,res,next){
         }
         res.send(data);
     }
-
-
 }
-var accepted=function(req,res,next){
+
+var accepted = function (req, res) {
     //var addsql=req.body;
-    var addsql={
+    var addsql = {
         teaID: "1001",
         type: "regular"
     }
-    var data={
-        tableList:"",
-        stuList:""
+    var data = {
+        tableList: "",
+        stuList: ""
     }
-    if(addsql.type==="regular"){
-        var rsql=sqlMap.teacher.select_tablelist_regular;
-        query(rsql,function(err,ret){
-            if(err){
-                console.log('[SELECT ERRO]:',err.message);
+    var sql1 = sqlMap.student.select_file_tableBody_regular;
+    var sql2 = sqlMap.student.select_file_tableBody_graduate;
+    if (addsql.type === "regular") {
+        var sql = sqlMap.teacher.select_result_regular;
+        query(sql, addsql.teaID, function (err, result) {
+            if (err) {
+                console.log('[SELECT ERRO]:', err.message);
                 res.send(data);
-            }else{
-                data.tableList=ret[0];
-            }
-        })
-        var sql=sqlMap.teacher.select_result_regular;
-        query(sql,addsql.teaID,function(err,result){
-            if(err){
-                console.log('[SELECT ERRO]:',err.message);
-                res.send(data);
-            }else{
-                data.stuList=result;
-                res.send(data);
+            } else {
+                data.stuList = result;
+                if (data.stuList[0]) {
+                    data.stuList.forEach(function (d, i) {
+                        query(sql1, d.stuNum, function (err, result) {
+                            if (err) {
+                                console.log('[SELECT ERRO]:', err.message);
+                                data.err = "服务器错误"
+                                res.send(data);
+                            } else {
+                                var body = JSON.parse(result[0].tableBody);
+                                for (var j = 0; j < data.tableList.length; j++) {
+                                    d[data.tableList[j].name] = body[data.tableList[j].name];
+                                    if (i == data.stuList.length - 1 && j == systemset.tableList.length - 1) {
+                                        res.send(data)
+                                    }
+                                }
+
+                            }
+                        })
+                    });
+                } else {
+                    res.send(data)
+                }
             }
         })
 
-    }else{
-        var gsql=sqlMap.teacher.select_tablelist_graduate;
-        query(gsql,function(err,ret){
-            if(err){
-                console.log('[SELECT ERRO]:',err.message);
+    } else {
+        var sql0 = sqlMap.teacher.select_result_graduate;
+        query(sql0, addsql.teaID, function (err, result) {
+            if (err) {
+                console.log('[SELECT ERRO]:', err.message);
                 res.send(data);
-            }else{
-                data.tableList=ret[0];
-            }
-        })
-        var sql0=sqlMap.teacher.select_result_graduate;
-        query(sql0,addsql.teaID,function(err,result){
-            if(err){
-                console.log('[SELECT ERRO]:',err.message);
-                res.send(data);
-            }else{
-                data.stuList=result;
-                res.send(data);
+            } else {
+                data.stuList = result;
+                if (data.stuList[0]) {
+                    data.stuList.forEach(function (d, i) {
+                        query(sql2, d.stuNum, function (err, result) {
+                            if (err) {
+                                console.log('[SELECT ERRO]:', err.message);
+                                data.err = "服务器错误"
+                                res.send(data);
+                            } else {
+                                var body = JSON.parse(result[0].tableBody);
+                                for (var j = 0; j < data.tableList.length; j++) {
+                                    d[data.tableList[j].name] = body[data.tableList[j].name];
+                                    if (i == data.stuList.length - 1 && j == systemset.tableList.length - 1) {
+                                        res.send(data)
+                                    }
+                                }
+
+                            }
+                        })
+                    });
+                } else {
+                    res.send(data)
+                }
             }
         })
 

@@ -1,9 +1,10 @@
 var query = require('../util');
 var sqlMap = require('../sqlMap');
-var stulogin = function (req, res, next) {
+var systemset = require("../systemset.json");
+var stulogin = function (req, res) {
     var sql = sqlMap.student.select_stunum;
     //var addsql = req.body;
-    var $result = {
+    var data = {
         success: 0,
         passChanged: 0,
     }
@@ -14,7 +15,8 @@ var stulogin = function (req, res, next) {
     query(sql, addsql.stuID, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
-            res.send($result);
+            data.err = "服务器错误";
+            res.send(data);
         } else {
             if (result[0]) {
                 //登录成功
@@ -22,22 +24,24 @@ var stulogin = function (req, res, next) {
                 console.log(resultArray);
 
                 if (resultArray.stuPass == addsql.stuPass) {
-                    $result.success = 1;
-                    $result.passChanged = resultArray.passChanged;
-                    res.send($result);
+                    data.success = 1;
+                    data.passChanged = resultArray.passChanged;
+                    res.send(data);
                 } else {
-                    $result.success = 0;
-                    res.send($result);
+                    data.err = "密码不正确";
+                    data.success = 0;
+                    res.send(data);
                 }
             } else {
-                $result.success = 0;
-                res.send($result);
+                data.err = "用户名不正确";
+                data.success = 0;
+                res.send(data);
             }
         }
     });
 };
 
-var changePass = function (req, res, next) { //修改密码
+var changePass = function (req, res) { //修改密码
     var sql = sqlMap.student.select_stunum;
     //var addsql = req.body;
     var addsql = {
@@ -51,6 +55,7 @@ var changePass = function (req, res, next) { //修改密码
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.success = 0;
+            data.err = "服务器错误";
             res.send(data);
         } else {
             if (result[0]) {
@@ -61,6 +66,7 @@ var changePass = function (req, res, next) { //修改密码
                         if (err) {
                             console.log("[UPDATE ERROR]:", err.message);
                             data.success = false;
+                            data.err = "服务器错误";
                             res.send(data);
                         } else {
                             data.success = true;
@@ -68,10 +74,12 @@ var changePass = function (req, res, next) { //修改密码
                         }
                     });
                 } else {
+                    data.err = "原密码与新密码相同";
                     data.success = false;
                     res.send(data);
                 }
             } else {
+                data.err = "用户名错误";
                 data.success = false;
                 res.send(data);
             }
@@ -79,18 +87,19 @@ var changePass = function (req, res, next) { //修改密码
     });
 };
 
-var allTeacher = function (req, res, next) {
+var allTeacher = function (req, res) {
     var addsql = req.body;
     var data = {
         tutorList: ""
     }
     if (addsql.type) {
-        if (addsql.type == "regular") {
+        if (addsql.type === "regular") {
             if (addsql.department) {
                 var sql00 = sqlMap.student.select_department_regular;
                 query(sql00, addsql.department, function (err, result) {
                     if (err) {
                         console.log("[SELECT ERROR]:", err.message);
+                        data.err = "服务器错误";
                         res.send(data);
                     } else {
                         data.tutorList = result;
@@ -102,6 +111,7 @@ var allTeacher = function (req, res, next) {
                 query(sql0, null, function (err, result) {
                     if (err) {
                         console.log("[SELECT ERROR]:", err.message);
+                        data.err = "服务器错误";
                         res.send(data);
                     } else {
                         data.tutorList = result;
@@ -115,6 +125,7 @@ var allTeacher = function (req, res, next) {
                 query(sql10, addsql.department, function (err, result) {
                     if (err) {
                         console.log("[SELECT ERROR]:", err.message);
+                        data.err = "服务器错误";
                         res.send(data);
                     } else {
                         data.tutorList = result;
@@ -126,6 +137,7 @@ var allTeacher = function (req, res, next) {
                 query(sql1, null, function (err, result) {
                     if (err) {
                         console.log("[SELECT ERROR]:", err.message);
+                        data.err = "服务器错误";
                         res.send(data);
                     } else {
                         data.tutorList = result;
@@ -141,6 +153,7 @@ var allTeacher = function (req, res, next) {
             query(sql20, addsql.department, function (err, result) {
                 if (err) {
                     console.log("[SELECT ERROR]:", err.message);
+                    data.err = "服务器错误";
                     res.send(data);
                 } else {
                     data.tutorList = result;
@@ -153,6 +166,7 @@ var allTeacher = function (req, res, next) {
             query(sql2, null, function (err, result) {
                 if (err) {
                     console.log("[SELECT ERROR]:", err.message);
+                    data.err = "服务器错误";
                     res.send(data);
                 } else {
                     data.tutorList = result;
@@ -165,23 +179,7 @@ var allTeacher = function (req, res, next) {
     }
 };
 
-var teacherById = function (req, res, next) {
-    var sql = sqlMap.student.select_oneteacher;
-    var addsql = req.body.teaNum;
-    //var addsql = "1001"
-    var str = "";
-    query(sql, addsql, (err, result) => {
-        if (err) {
-            console.log("[SELECT ERROR]:", err.message);
-        }
-        str = result;
-        console.log(str);
-
-        res.send(str);
-    });
-};
-
-var chooseRegular = function (req, res, next) {
+var chooseRegular = function (req, res) {
     var data = {
         success: false
     }
@@ -198,21 +196,23 @@ var chooseRegular = function (req, res, next) {
     query(sql0, [addsql.isRedistribute, addsql.stuID], (err, result) => {
         if (err) {
             console.log("[UPDATE ERRO]:", err.message);
+            data.err = "服务器错误（上传调剂信息）";
             res.send(data);
         } else {
-            console.log(1);
             if (addsql.firstChoice) {
 
                 query(sql1, [addsql.firstChoice, addsql.stuID], (err, result) => {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
+                        data.err = "服务器错误（上传第一志愿）";
                         res.send(data);
                     } else {
                         console.log(1);
                         if (addsql.secondChoice) {
                             query(sql2, [addsql.secondChoice, addsql.stuID], (err, result) => {
                                 if (err) {
-                                    console.log("[UPDATE ERRO]:", err.message);
+                                    console.log("[UPDATE ERRO]:", err.message)
+                                    data.err = "服务器错误（上传第二志愿）";
                                     res.send(data);
                                 } else {
                                     console.log(1);
@@ -235,7 +235,7 @@ var chooseRegular = function (req, res, next) {
     })
 };
 
-var chooseGraduate = function (req, res, next) {
+var chooseGraduate = function (req, res) {
     var data = {
         success: false
     }
@@ -252,6 +252,7 @@ var chooseGraduate = function (req, res, next) {
     query(sql0, [addsql.isRedistribute, addsql.stuID], function (err, result) {
         if (err) {
             console.log("[UPDATE ERRO]:", err.message);
+            data.err = "服务器错误（上传调剂信息）";
             res.send(data);
         } else {
             console.log(1);
@@ -260,6 +261,7 @@ var chooseGraduate = function (req, res, next) {
                 query(sql1, [addsql.firstChoice, addsql.stuID], function (err, result) {
                     if (err) {
                         console.log("[UPDATE ERRO]:", err.message);
+                        data.err = "服务器错误（上传第一志愿）";
                         res.send(data);
                     } else {
                         console.log(1);
@@ -267,6 +269,7 @@ var chooseGraduate = function (req, res, next) {
                             query(sql2, [addsql.secondChoice, addsql.stuID], function (err, result) {
                                 if (err) {
                                     console.log("[UPDATE ERRO]:", err.message);
+                                    data.err = "服务器错误（上传第二志愿）";
                                     res.send(data);
                                 } else {
                                     console.log(1);
@@ -289,7 +292,7 @@ var chooseGraduate = function (req, res, next) {
     })
 };
 
-var selectedResult = function (req, res, next) {
+var selectedResult = function (req, res) {
     var data = {
         firstChoice: "",
         secondChoice: "",
@@ -371,7 +374,7 @@ var selectedResult = function (req, res, next) {
     });
 };
 
-var tutorResult = function (req, res, next) {
+var tutorResult = function (req, res) {
     //var addsql = req.body;
     var addsql = {
         stuID: '201706062629',
@@ -413,7 +416,7 @@ var tutorResult = function (req, res, next) {
     }
 };
 
-var writeinfo = function (req, res, next) {
+var writeinfo = function (req, res) {
     //var addsql = req.body;
     var data = {
         success: false
@@ -450,136 +453,93 @@ var writeinfo = function (req, res, next) {
         }
     }
     if (addsql.tutorType == "regular") {
-        var sql0 = sqlMap.student.update_file_tableList_regelar;
         var sql1 = sqlMap.student.update_file_tableBody_regelar;
-        query(sql0, [JSON.stringify(addsql.tableList), addsql.stuID], function (err, result) {
+        var tableBody1 = {};
+        for (i = 0; i < systemset.tableList.length; i++) {
+            tableBody1[systemset.tableList[i].name] = addsql[systemset.tableList[i].name]
+        }
+        console.log(tableBody1);
+        query(sql1, [JSON.stringify(tableBody1), addsql.stuID], function (err, result) {
             if (err) {
                 console.log("[UPDATE ERRO]:", err.message);
+                data.err = "服务器错误（上传文件详细信息）";
                 res.send(data);
             } else {
-                var tableBody1 = {};
-
-                for (i = 0; i < addsql.tableList.length; i++) {
-                    tableBody1[addsql.tableList[i].name] = addsql[addsql.tableList[i].name]
-                }
-                console.log(tableBody1);
-
-
-                query(sql1, [JSON.stringify(tableBody1), addsql.stuID], function (err, result) {
-                    if (err) {
-                        console.log("[UPDATE ERRO]:", err.message);
-                        res.send(data);
-                    } else {
-                        data.success = true;
-                        res.send(data);
-                    }
-                })
+                data.success = true;
+                res.send(data);
             }
         })
     } else if (addsql.tutorType == "graduate") {
-        var sql2 = sqlMap.student.update_file_tableList_graduate;
         var sql3 = sqlMap.student.update_file_tableBody_graduate;
-        query(sql2, [addsql.tableList, addsql.stuID], function (err, result) {
+        var tableBody2 = {};
+        for (i = 0; i < systemset.tableList.length; i++) {
+            tableBody2[systemset.tableList[i].name] = addsql[systemset.tableList[i].name]
+        }
+        query(sql3, [JSON.stringify(tableBody2), addsql.stuID], function (err, result) {
             if (err) {
                 console.log("[UPDATE ERRO]:", err.message);
+                data.err = "服务器错误（上传文件详细信息）";
                 res.send(data);
             } else {
-                var tableBody2 = {};
-                for (i = 0; i < addsql.tableList.length; i++) {
-                    tableBody2[addsql.tableList[i].name] = addsql[addsql.tableList[i].name]
-                }
-                query(sql3, [JSON.stringify(tableBody2), addsql.stuID], function (err, result) {
-                    if (err) {
-                        console.log("[UPDATE ERRO]:", err.message);
-                        res.send(data);
-                    } else {
-                        data.success = true;
-                        res.send(data);
-                    }
-                })
+                data.success = true;
+                res.send(data);
             }
         })
     } else {
+        data.err = "类型错误";
         res.send(data);
     }
-}
+};
 
-var readinfo = function (req, res, next) {
-
+var readinfo = function (req, res) {
     //var addsql = req.body;
     var addsql = {
         stuID: "201706062629",
         tutorType: "regular"
     }
     var data = {
-        tableList: ""
+        tableList: systemset.tableList
     }
     if (addsql.tutorType == "regular") {
-        var sql0 = sqlMap.student.select_file_tableList_regelar;
         var sql1 = sqlMap.student.select_file_tableBody_regelar;
-        query(sql0, addsql.stuID, function (err, result) {
+        query(sql1, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERROR]:", err.message);
+                data.err = "服务器错误";
                 res.send(data);
             } else {
-                data.tableList = JSON.parse(result[0].tableList);
-                var list0 = JSON.parse(result[0].tableList)
-                query(sql1, addsql.stuID, function (err, result) {
-                    if (err) {
-                        console.log("[SELECT ERROR]:", err.message);
-                        res.send(data);
-                    } else {
-                        var body = JSON.parse(result[0].tableBody)
-                        //for (i = 0; i < list0.length; i++) {
-                        //}
-                        for (i = 0; i < list0.length; i++) {
-                            data[list0[i].name] = body[list0[i].name]
-                        }
-                        res.send(data);
-                    }
-                })
+                var body = JSON.parse(result[0].tableBody)
+                //for (i = 0; i < list0.length; i++) {
+                //}
+                for (i = 0; i < list0.length; i++) {
+                    data[systemset.tableList[i].name] = body[systemset.tableList[i].name]
+                }
+                res.send(data);
             }
         })
     } else if (addsql.tutorType == "graduate") {
-
-        var sql2 = sqlMap.student.select_file_tableList_graduate;
         var sql3 = sqlMap.student.select_file_tableBody_graduate;
-        query(sql2, addsql.stuID, function (err, result) {
+        query(sql3, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERROR]:", err.message);
+                data.err = "服务器错误";
                 res.send(data);
             } else {
-                data.tableList = JSON.parse(result[0].tableList);
-                var list0 = JSON.parse(result[0].tableList)
-                query(sql3, addsql.stuID, function (err, result) {
-                    if (err) {
-                        console.log("[SELECT ERROR]:", err.message);
-                        res.send(data);
-                    } else {
-                        var body = JSON.parse(result[0].tableBody)
-                        //for (i = 0; i < list0.length; i++) {
-                        //}
-                        for (i = 0; i < list0.length; i++) {
-                            data[list0[i].name] = body[list0[i].name]
-                        }
-                        res.send(data);
-                    }
-                })
+                var body = JSON.parse(result[0].tableBody)
+                //for (i = 0; i < list0.length; i++) {
+                //}
+                for (i = 0; i < list0.length; i++) {
+                    data[systemset.tableList[i].name] = body[systemset.tableList[i].name]
+                }
+                res.send(data);
             }
         })
-
-
-
-
-
-
     }
-}
+};
 
 module.exports = {
     stulogin,
     changePass,
-    teacherById,
     allTeacher,
     selectedResult,
     tutorResult,
