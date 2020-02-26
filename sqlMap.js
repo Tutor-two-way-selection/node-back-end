@@ -88,7 +88,7 @@ var sqlMap = {
         //查询？志愿学生信息
         select_stu_first_regular: 'select regularchoice.stuNum,stuName from regularchoice,student where idFirst=? and statusFirst=2 and statusSecond = 2 and regularchoice.stuNum=student.stuNum',
         select_stu_second_regular: 'select regularchoice.stuNum,stuName from regularchoice,student where idSecond=? and statusFirst=0 and regularchoice.stuNum=student.stuNum',
-        select_stu_first_graduate: 'select graduatechoice.stuNum,stuName, from graduatechoice,student where idFirst=? and statusFirst=2 and statusSecond = 2 graduatechoice.stuNum=student.stuNum',
+        select_stu_first_graduate: 'select graduatechoice.stuNum,stuName, from graduatechoice,student where idFirst=? and statusFirst=2 and statusSecond = 2 and graduatechoice.stuNum=student.stuNum',
         select_stu_second_graduate: 'select graduatechoice.stuNum,stuName, from graduatechoice,student where idSecond=? and statusFirst=0 and graduatechoice.stuNum=student.stuNum',
         select_tablelist_regular: 'select tableList from regularchoice',
         select_tablelist_graduate: 'select tableList from graduatechoice',
@@ -120,7 +120,54 @@ var sqlMap = {
     admin: {
         //登录
         login: 'select * from admin where adminNum = ?',
-        stulist: 'select * from student where stuGrade in(select adminGrade from admin where adminNum = ?)'
+        stulist: 'select * from student where stuGrade in(select adminGrade from admin where adminNum = ?)',
+        //如果第一志愿被录取则填进result表里&&手动调整
+        update_result_regularid:'update result set regularid=? where stuNum =?',
+        update_result_graduateid:'update result set graduateid=? where stuNum =?',
+
+        //第一轮与第二轮
+        select_first_regular:'select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusFirst status from student ,teacher,regularchoice where student.stuNum=regularchoice.stuNum and teacher.id=regularchoice.idFirst and stuGrade in(select adminGrade from admin where adminNum = ?)',
+        select_second_regular:'select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusSecond status from student ,teacher,regularchoice where statusFirst !=1,student.stuNum=regularchoice.stuNum and teacher.id=regularchoice.idSecond  and stuGrade in(select adminGrade from admin where adminNum = ?) ',
+        select_first_graduate:'select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusFirst status from student ,teacher,graduatechoice where student.stuNum=graduatechoice.stuNum and teacher.id=graduatechoice.idFirst and stuGrade in(select adminGrade from admin where adminNum = ?)',
+        select_second_graduate:'select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusSecond status from student ,teacher,graduatechoice where statusFirst !=1,student.stuNum=graduatechoice.stuNum and teacher.id=graduatechoice.idSecond and stuGrade in(select adminGrade from admin where adminNum = ?)',
+        
+        //未分配的学生
+        select_resultnull_regularid:'SELECT student.stuNum,stuName,stuClass from result,student,regularchoice where regularid is NULL and student.stuNum=regularchoice.stuNum and adjust=0 and result.stuNum=student.stuNum and stuGrade in(select adminGrade from admin where adminNum =?)',
+        select_resultnull_graduateid:'SELECT student.stuNum,stuName,stuClass from result,student,graduatechoice where graduateid is NULL and student.stuNum=graduatechoice.stuNum and adjust=0 and result.stuNum=student.stuNum and stuGrade in(select adminGrade from admin where adminNum =?) ',
+
+        //是否全部分配
+        select_resultall_regularid:'select result.stuNum from result,student where result.stuNum in(select stuNum from regularchoice where adjust=1) and regularid is NULL and stuGrade in(select adminGrade from admin where adminNum =?) and result.stuNum=student.stuNum',
+        select_resultall_graduateid:'select result.stuNum from result,student where result.stuNum in(select stuNum from graduatechoice where adjust=1) and graduateid is NULL and stuGrade in(select adminGrade from admin where adminNum =?) and result.stuNum=student.stuNum',
+        //志愿全被处理
+        first_success_regular:'select student.stuNum from regularchoice ,student where statusFirst=2 and stuGrade in(select adminGrade from admin where adminNum =?)and student.stuNum=regularchoice.stuNum ',
+        second_success_regular:'select student.stuNum from regularchoice ,student where statusSecond=2 and stuGrade in(select adminGrade from admin where adminNum =?)and student.stuNum=regularchoice.stuNum',
+        first_success_graduate:'select student.stuNum from graduatechoice ,student where statusFirst=2 and stuGrade in(select adminGrade from admin where adminNum =?)and student.stuNum=graduatechoice.stuNum',
+        second_success_graduate:'select student.stuNum from graduatechoice ,student where statusSecond=2 and stuGrade in(select adminGrade from admin where adminNum =?)and student.stuNum=graduatechoice.stuNum',
+        
+        //查询batch
+        select_batch_regular:'select rbatch from admin where adminNum=?',
+        select_batch_graduate:'select gbatch from admin where adminNum=?',
+
+        //修改batch
+        update_batch_regular:'update admin set rbatch=? where adminNum=?',
+        update_batch_graduate:'update admin set gbatch=? where adminNum=?',
+
+        //增加公示时间
+        update_time_regular:'update admin set rpstart=? ,rpend=? where adminNum=?',
+        update_time_graduate:'update admin set gpstart=? ,gpend=? where adminNum=?',
+
+        //查询公示时间
+        select_time_regular:'select rpstart,rpend from admin where adminNum=?' ,
+        select_time_graduate:'select gpstart,gpend from admin where adminNum=?',
+
+        //最后的结果
+        select_final_graduate:'select stuName,student.stuNum,stuClass,stuTelephone,`name`,id from student,teacher,result where student.stuNum=result.stuNum and teacher.id=result.graduateid and stuGrade in(select adminGrade from admin where adminNum =?)',
+        select_final_regular:'select stuName,student.stuNum,stuClass,stuTelephone,`name`,id from student,teacher,result where student.stuNum=result.stuNum and teacher.id=result.regularid and stuGrade in(select adminGrade from admin where adminNum =?)',
+        
+
+    
+  
+    
     }
 
 }
