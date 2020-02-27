@@ -511,7 +511,7 @@ var readinfo = function (req, res) {
                 var body = JSON.parse(result[0].tableBody)
                 //for (i = 0; i < list0.length; i++) {
                 //}
-                for (i = 0; i < list0.length; i++) {
+                for (i = 0; i < systemset.tableList.length; i++) {
                     data[systemset.tableList[i].name] = body[systemset.tableList[i].name]
                 }
                 res.send(data);

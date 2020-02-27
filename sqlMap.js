@@ -86,12 +86,11 @@ var sqlMap = {
         select_teafirst_graduate: 'select * from graduatechoice where stuNum=? and idFirst=?',
         select_teasecond_graduate: 'select * from graduatechoice where stuNum=? and idSecond=?',
         //查询？志愿学生信息
-        select_stu_first_regular: "select regularchoice.stuNum,stuName from regularchoice,student where idFirst=? and statusFirst='untreat' and  and regularchoice.stuNum=student.stuNum",
-        select_stu_second_regular: "select regularchoice.stuNum,stuName from regularchoice,student where idSecond=? and statusFirst='refuse' and regularchoice.stuNum=student.stuNum",
-        select_stu_first_graduate: "select graduatechoice.stuNum,stuName, from graduatechoice,student where idFirst=? and statusFirst='untreat' and graduatechoice.stuNum=student.stuNum",
-        select_stu_second_graduate: "select graduatechoice.stuNum,stuName, from graduatechoice,student where idSecond=? and statusFirst='refuse' and graduatechoice.stuNum=student.stuNum",
-        select_tablelist_regular: 'select tableList from regularchoice',
-        select_tablelist_graduate: 'select tableList from graduatechoice',
+        select_stu_first_regular: "select regularchoice.stuNum,stuName from regularchoice,student where idFirst=? and statusFirst='untreat' and stuGrade=? and regularchoice.stuNum=student.stuNum",
+        select_stu_second_regular: "select regularchoice.stuNum,stuName from regularchoice,student where idSecond=? and statusFirst='refuse' and stuGrade=?  and regularchoice.stuNum=student.stuNum",
+        select_stu_first_graduate: "select graduatechoice.stuNum,stuName, from graduatechoice,student where idFirst=? and statusFirst='untreat' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
+        select_stu_second_graduate: "select graduatechoice.stuNum,stuName, from graduatechoice,student where idSecond=? and statusFirst='refuse' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
+
         //拒收或者接收
         receive_first_regular: "update regularchoice set statusFirst='accept' where  stuNum=?",
         receive_second_regular: "update regularchoice set statusSecond='accept' where  stuNum=?",

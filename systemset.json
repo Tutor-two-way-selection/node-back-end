@@ -3,7 +3,15 @@
         "name": "profileTable",
         "title": "学生个人简介表"
     }, {
-        "name": "choiceTable"
+        "name": "choiceTable",
+        "title": "双向选择表"
     }],
-    "batch": "1"
+    "batch": {
+        "regular": {
+            "2017": "1"
+        },
+        "graduate": {
+            "2017": "1"
+        }
+    }
 }
