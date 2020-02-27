@@ -28,6 +28,12 @@ CREATE TABLE `admin` (
   `adminNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `adminPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `adminGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `rbatch` int(11) DEFAULT '0',
+  `rpstart` varchar(255) DEFAULT NULL,
+  `rpend` varchar(255) DEFAULT NULL,
+  `gbatch` int(11) DEFAULT '0',
+  `gpstart` varchar(255) DEFAULT NULL,
+  `gpend` varchar(225) DEFAULT NULL,
   PRIMARY KEY (`adminNum`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,7 +44,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES ('123456','123456','2017');
+INSERT INTO `admin` VALUES ('123456','123456','2017',0,NULL,NULL,0,NULL,NULL);
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -52,11 +58,10 @@ DROP TABLE IF EXISTS `graduatechoice`;
 CREATE TABLE `graduatechoice` (
   `stuNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `idFirst` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `statusFirst` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `statusFirst` varchar(255) DEFAULT 'untreat',
   `idSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `statusSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `statusSecond` varchar(255) DEFAULT 'untreat',
   `adjust` tinyint(4) DEFAULT NULL,
-  `tableList` json DEFAULT NULL,
   `tableBody` json DEFAULT NULL,
   PRIMARY KEY (`stuNum`) USING BTREE,
   KEY `teacher_key` (`idFirst`,`idSecond`) USING BTREE,
@@ -70,7 +75,7 @@ CREATE TABLE `graduatechoice` (
 
 LOCK TABLES `graduatechoice` WRITE;
 /*!40000 ALTER TABLE `graduatechoice` DISABLE KEYS */;
-INSERT INTO `graduatechoice` VALUES ('201706062629',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `graduatechoice` VALUES ('201706062629',NULL,'untreat',NULL,'untreat',NULL,NULL);
 /*!40000 ALTER TABLE `graduatechoice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -84,11 +89,10 @@ DROP TABLE IF EXISTS `regularchoice`;
 CREATE TABLE `regularchoice` (
   `stuNum` varchar(255) NOT NULL,
   `idFirst` varchar(255) DEFAULT NULL,
-  `statusFirst` varchar(255) DEFAULT NULL,
+  `statusFirst` varchar(255) DEFAULT 'untreat',
   `idSecond` varchar(255) DEFAULT NULL,
-  `statusSecond` varchar(255) DEFAULT NULL,
+  `statusSecond` varchar(255) DEFAULT 'untreat',
   `adjust` tinyint(4) DEFAULT NULL,
-  `tableList` json DEFAULT NULL,
   `tableBody` json DEFAULT NULL,
   PRIMARY KEY (`stuNum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -100,7 +104,7 @@ CREATE TABLE `regularchoice` (
 
 LOCK TABLES `regularchoice` WRITE;
 /*!40000 ALTER TABLE `regularchoice` DISABLE KEYS */;
-INSERT INTO `regularchoice` VALUES ('201706062629','1001','待确认',NULL,NULL,0,'[{\"name\": \"profileTable\", \"title\": \"学生个人简介表\"}, {\"name\": \"choiceTable\"}]','{\"choiceTable\": \"{\\\"flag\\\":true,\\\"fileList\\\":[{\\\"url\\\":\\\"abcabcabcabcabcabcabcabc\\\",\\\"name\\\":\\\"caster.jpg\\\",\\\"status\\\":\\\"success\\\"}]}\", \"profileTable\": \"{\\\"flag\\\":true,\\\"fileList\\\":[{\\\"url\\\":\\\"abcabcabcabcabcabcabcabc\\\",\\\"name\\\":\\\"caster.jpg\\\",\\\"status\\\":\\\"success\\\"},{\\\"url\\\":\\\"http://localhost:8080/downloadFile?filename=saidgihkdglha&oldname=va11halla.png\\\",\\\"name\\\":\\\"caster.jpg\\\",\\\"status\\\":\\\"success\\\",\\\"size\\\":1447144}]}\"}');
+INSERT INTO `regularchoice` VALUES ('201706062629','1001','untreat','1003','untreat',0,'{\"choiceTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}]}, \"profileTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}, {\"url\": \"http://localhost:8080/downloadFile?filename=saidgihkdglha&oldname=va11halla.png\", \"name\": \"caster.jpg\", \"size\": 1447144, \"status\": \"success\"}]}}');
 /*!40000 ALTER TABLE `regularchoice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -249,4 +253,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-14 22:07:19
+-- Dump completed on 2020-02-27 16:17:59
