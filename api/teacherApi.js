@@ -100,14 +100,12 @@ var stuinfo = function (req, res) {
         async.eachSeries(
             Object.keys(systemset.batch.regular),
             function (item, callback) {
-                //if (systemset.batch.regular[item] == 1) {
-                //console.log(item);
-
                 var sql3 = sqlMap.teacher.select_stu_first_regular;
                 query(sql3, [addsql.teaID, item], function (err, result) {
                     if (err) {
                         console.log("[SELECT ERRO]:", err.message);
                         data.err = "服务器错误";
+                        callback(err);
                     } else {
                         //console.log(result);
                         if (result[0]) {
@@ -116,62 +114,113 @@ var stuinfo = function (req, res) {
                             });
                             //console.log(data);
                         }
+                        callback(null, item);
                     }
-                    callback(null, item);
+
                 });
-                // } else if (systemset.batch.regular[item] == 2) {
-                //   var sql4 = sqlMap.teacher.select_stu_second_regular;
-                //   query(sql4, [addsql.teaID, item], function(err, result) {
-                //     if (err) {
-                //       console.log("[SELECT ERRO]:", err.message);
-                //       data.err = "服务器错误";
-                //     } else {
-                //       if (result[0]) {
-                //         result.forEach(function(d) {
-                //           data.stuList.push(d);
-                //         });
-                //       }
-                //     }
-                //   });
-                // }
-
             },
-            function (err) {
+            function (err, result) {
+                if (err) {
+                    data.err = "回调过程错误"
+                    res.send(data)
+                }
                 //console.log(data);
-                async.eachSeries(
-                    data.stuList,
-                    function (item, callback) {
-                        query(sql1, item.stuNum, function (err, result) {
-                            if (err) {
-                                console.log("[SELECT ERROR]:", err.message);
-                                data.err = "服务器错误";
-                            } else {
-                                var body = JSON.parse(result[0].tableBody);
-                                for (var i = 0; i < systemset.tableList.length; i++) {
-                                    item[systemset.tableList[i].name] =
-                                        body[systemset.tableList[i].name];
+                if (result) {
+                    async.eachSeries(
+                        data.stuList,
+                        function (item, callback) {
+                            query(sql1, item.stuNum, function (err, result) {
+                                if (err) {
+                                    console.log("[SELECT ERROR]:", err.message);
+                                    data.err = "服务器错误";
+                                    callback(err)
+                                } else {
+                                    var body = JSON.parse(result[0].tableBody);
+                                    for (var i = 0; i < systemset.tableList.length; i++) {
+                                        item[systemset.tableList[i].name] =
+                                            body[systemset.tableList[i].name];
+                                    }
+                                    callback(null, item);
                                 }
+
+                            });
+                        },
+                        function (err, result) {
+                            if (err) {
+                                data.err = err;
+                                res.send(data);
                             }
-                            callback(null, item);
-                        });
-                    },
-                    function (err) {
-                        if (err) {
-                            data.err = err;
-                        } else {
-                            res.send(data);
+                            if (result) {
+                                res.send(data);
+                            }
                         }
-                    }
-                );
+                    );
+                }
             }
-
-
-
-
-
         );
-        console.log(data)
-    } else {}
+    } else {
+        async.eachSeries(
+            Object.keys(systemset.batch.graduate),
+            function (item, callback) {
+                var sql3 = sqlMap.teacher.select_stu_first_graduate;
+                query(sql3, [addsql.teaID, item], function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERRO]:", err.message);
+                        data.err = "服务器错误";
+                        callback(err);
+                    } else {
+                        //console.log(result);
+                        if (result[0]) {
+                            result.forEach(function (d) {
+                                data.stuList.push(d);
+                            });
+                            //console.log(data);
+                        }
+                        callback(null, item);
+                    }
+
+                });
+            },
+            function (err, result) {
+                if (err) {
+                    data.err = "回调错误"
+                    res.send(data)
+                }
+                //console.log(data);
+                if (result) {
+                    async.eachSeries(
+                        data.stuList,
+                        function (item, callback) {
+                            query(sql2, item.stuNum, function (err, result) {
+                                if (err) {
+                                    console.log("[SELECT ERROR]:", err.message);
+                                    data.err = "服务器错误";
+                                    callback(err);
+                                } else {
+                                    var body = JSON.parse(result[0].tableBody);
+                                    for (var i = 0; i < systemset.tableList.length; i++) {
+                                        item[systemset.tableList[i].name] =
+                                            body[systemset.tableList[i].name];
+                                    }
+                                    callback(null, item);
+                                }
+
+                            });
+                        },
+                        function (err) {
+                            if (err) {
+                                data.err = err;
+                                res.send(data)
+                            }
+                            if (result) {
+                                res.send(data);
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    }
 };
 var selectstu = function (req, res) {
     //var addsql=req.body;
@@ -191,6 +240,12 @@ var selectstu = function (req, res) {
     var data = {
         success: true
     };
+    var num = 0;
+    var nsql1 = sqlMap.teacher.select_teacher_regular_num;
+    var nsql2 = sqlMap.teacher.select_teacher_graduate_num;
+
+    var usql1 = sqlMap.teacher.update_teacher_regular_num;
+    var usql2 = sqlMap.teacher.update_teacher_graduate_num;
     //先查询这个老师是第一志愿还是第二志愿老师
     var rsql1 = sqlMap.teacher.select_teafirst_regular;
     var rsql2 = sqlMap.teacher.select_teasecond_regular;
@@ -209,127 +264,235 @@ var selectstu = function (req, res) {
     var gsql20 = sqlMap.teacher.refuse_second_graduate;
 
     if (addsql.type === "regular") {
-        for (let i = 0; i < addsql.selStuList.length; i++) {
-            let ifRecept = addsql.selStuList[i].recept;
-            let stuNum = addsql.selStuList[i].stuID;
-            query(rsql1, addsql.teaID, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERRO]:", err.message);
-                    data.success = false;
-                    res.send(data);
-                } else {
-                    //如果在第一志愿找不到那么找第二志愿
-                    if (result[0] === undefined) {
-                        query(rsql2, addsql.teaID, function (err, result) {
-                            if (err) {
-                                console.log("[SELECT ERRO]:", err.message);
-                                data.success = false;
-                                res.send(data);
-                            } else {
-                                if (ifRecept == true) {
-                                    query(rsql21, stuNum, function (err, ret) {
-                                        if (err) {
-                                            console.log("[UPDATE ERRO]:", err.message);
-                                            data.success = false;
-                                            res.send(data);
-                                        }
-                                    });
-                                } else {
-                                    query(rsql20, stuNum, function (err, ret) {
-                                        if (err) {
-                                            console.log("[UPDATE ERRO]:", err.message);
-                                            data.success = false;
-                                            res.send(data);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    } else {
-                        if (ifRecept == true) {
-                            query(rsql11, stuNum, function (err, ret) {
-                                if (err) {
-                                    console.log("[UPDATE ERRO]:", err.message);
-                                    data.success = false;
-                                    res.send(data);
-                                }
-                            });
-                        } else {
-                            query(rsql10, stuNum, function (err, ret) {
-                                if (err) {
-                                    console.log("[UPDATE ERRO]:", err.message);
-                                    data.success = false;
-                                    res.send(data);
-                                }
-                            });
-                        }
+        query(nsql1, addsql.teaID, function (err, result) {
+            if (err) {
+                console.log("[SELECT ERRO]:", err.message);
+                data.success = false;
+                data.err = "查询不到学生数量"
+                res.send(data);
+            } else {
+                num = result[0];
+                addsql.selStuList.forEach(function (d) {
+                    if (d.recept === true) {
+                        num++;
                     }
-                }
-            });
-        }
-        res.send(data);
+                })
+                query(usql1, [num, addsql.teaID], function (err) {
+                    if (err) {
+                        data.success = false;
+                        data.err = "更新学生数量失败"
+                        res.send(data);
+                    } else {
+                        async.eachSeries(addsql.selStuList, function (item, callback) {
+                                var ifRecept = item.recept;
+                                var stuNum = item.stuID;
+                                query(rsql1, [stuNum, addsql.teaID], function (err, result) {
+                                    if (err) {
+                                        console.log("[SELECT ERRO]:", err.message);
+                                        data.success = false;
+                                        data.err = "服务器错误"
+                                        callback(err);
+                                    } else {
+                                        if (result[0]) {
+                                            if (ifRecept) {
+                                                query(rsql11, item.stuID, function (err) {
+                                                    if (err) {
+                                                        console.log("[UPDATE ERRO]:", err.message);
+                                                        data.success = false;
+                                                        data.err = "服务器错误"
+                                                        callback(err);
+                                                    } else {
+                                                        callback(null, item);
+                                                    }
+                                                })
+                                            } else {
+                                                query(rsql10, item.stuID, function (err) {
+                                                    if (err) {
+                                                        console.log("[UPDATE ERRO]:", err.message);
+                                                        data.success = false;
+                                                        data.err = "服务器错误"
+                                                        callback(err);
+                                                    } else {
+                                                        callback(null, item);
+                                                    }
+                                                })
+                                            }
+                                        } else {
+                                            query(rsql2, [stuNum, addsql.teaID], function (err, result) {
+                                                if (err) {
+                                                    console.log("[SELECT ERRO]:", err.message);
+                                                    data.success = false;
+                                                    data.err = "服务器错误"
+                                                    callback(err);
+                                                } else {
+                                                    if (result[0]) {
+                                                        if (ifRecept) {
+                                                            query(rsql21, item.stuID, function (err) {
+                                                                if (err) {
+                                                                    console.log("[UPDATE ERRO]:", err.message);
+                                                                    data.success = false;
+                                                                    data.err = "服务器错误"
+                                                                    callback(err);
+                                                                } else {
+                                                                    callback(null, item);
+                                                                }
+                                                            })
+                                                        } else {
+                                                            query(rsql20, item.stuID, function (err) {
+                                                                if (err) {
+                                                                    console.log("[UPDATE ERRO]:", err.message);
+                                                                    data.success = false;
+                                                                    data.err = "服务器错误"
+                                                                    callback(err);
+                                                                } else {
+                                                                    callback(null, item);
+                                                                }
+                                                            })
+                                                        }
+                                                    } else {
+                                                        data.success = false;
+                                                        data.err = "未检索到志愿信息"
+                                                        callback(err);
+                                                    }
+                                                }
+                                            })
+
+                                        }
+                                    }
+
+                                })
+                            },
+                            function (err) {
+                                res.send(data)
+                            })
+                    }
+                })
+            }
+
+
+
+
+
+
+
+
+        })
     } else {
-        for (let i = 0; i < addsql.selStuList.length; i++) {
-            let ifRecept = addsql.selStuList[i].recept;
-            let stuNum = addsql.selStuList[i].stuID;
-            query(gsql1, addsql.teaID, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERRO]:", err.message);
-                    data.success = false;
-                    res.send(data);
-                } else {
-                    //如果在第一志愿找不到那么找第二志愿
-                    if (result[0] === undefined) {
-                        query(gsql2, addsql.teaID, function (err, result) {
-                            if (err) {
-                                console.log("[SELECT ERRO]:", err.message);
-                                data.success = false;
-                                res.send(data);
-                            } else {
-                                if (ifRecept == true) {
-                                    query(gsql21, stuNum, function (err, ret) {
-                                        if (err) {
-                                            console.log("[UPDATE ERRO]:", err.message);
-                                            data.success = false;
-                                            res.send(data);
-                                        }
-                                    });
-                                } else {
-                                    query(gsql20, stuNum, function (err, ret) {
-                                        if (err) {
-                                            console.log("[UPDATE ERRO]:", err.message);
-                                            data.success = false;
-                                            res.send(data);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    } else {
-                        if (ifRecept == true) {
-                            query(gsql11, stuNum, function (err, ret) {
-                                if (err) {
-                                    console.log("[UPDATE ERRO]:", err.message);
-                                    data.success = false;
-                                    res.send(data);
-                                }
-                            });
-                        } else {
-                            query(gsql10, stuNum, function (err, ret) {
-                                if (err) {
-                                    console.log("[UPDATE ERRO]:", err.message);
-                                    data.success = false;
-                                    res.send(data);
-                                }
-                            });
-                        }
+        query(nsql2, addsql.teaID, function (err, result) {
+            if (err) {
+                console.log("[SELECT ERRO]:", err.message);
+                data.success = false;
+                data.err = "查询不到学生数量"
+                res.send(data);
+            } else {
+                num = result[0];
+                addsql.selStuList.forEach(function (d) {
+                    if (d.recept === true) {
+                        num++;
                     }
-                }
-            });
-        }
-        res.send(data);
-    }
-};
+                })
+                query(usql2, [num, addsql.teaID], function (err) {
+                    if (err) {
+                        data.success = false;
+                        data.err = "更新学生数量失败"
+                        res.send(data);
+                    } else {
+                        async.eachSeries(addsql.selStuList, function (item, callback) {
+                                var ifRecept = item.recept;
+                                var stuNum = item.stuID;
+                                query(gsql1, [stuNum, addsql.teaID], function (err, result) {
+                                    if (err) {
+                                        console.log("[SELECT ERRO]:", err.message);
+                                        data.success = false;
+                                        data.err = "服务器错误"
+                                        callback(err);
+                                    } else {
+                                        if (result[0]) {
+                                            if (ifRecept) {
+                                                query(gsql11, item.stuID, function (err) {
+                                                    if (err) {
+                                                        console.log("[UPDATE ERRO]:", err.message);
+                                                        data.success = false;
+                                                        data.err = "服务器错误"
+                                                        callback(err);
+                                                    } else {
+                                                        callback(null, item);
+                                                    }
+                                                })
+                                            } else {
+                                                query(gsql10, item.stuID, function (err) {
+                                                    if (err) {
+                                                        console.log("[UPDATE ERRO]:", err.message);
+                                                        data.success = false;
+                                                        data.err = "服务器错误"
+                                                        callback(err);
+                                                    } else {
+                                                        callback(null, item);
+                                                    }
+                                                })
+                                            }
+                                        } else {
+                                            query(gsql2, [stuNum, addsql.teaID], function (err, result) {
+                                                if (err) {
+                                                    console.log("[SELECT ERRO]:", err.message);
+                                                    data.success = false;
+                                                    data.err = "服务器错误"
+                                                    callback(err);
+                                                } else {
+                                                    if (result[0]) {
+                                                        if (ifRecept) {
+                                                            query(gsql21, item.stuID, function (err) {
+                                                                if (err) {
+                                                                    console.log("[UPDATE ERRO]:", err.message);
+                                                                    data.success = false;
+                                                                    data.err = "服务器错误"
+                                                                    callback(err);
+                                                                } else {
+                                                                    callback(null, item);
+                                                                }
+                                                            })
+                                                        } else {
+                                                            query(gsql20, item.stuID, function (err) {
+                                                                if (err) {
+                                                                    console.log("[UPDATE ERRO]:", err.message);
+                                                                    data.success = false;
+                                                                    data.err = "服务器错误"
+                                                                    callback(err);
+                                                                } else {
+                                                                    callback(null, item);
+                                                                }
+                                                            })
+                                                        }
+                                                    } else {
+                                                        data.success = false;
+                                                        data.err = "未检索到志愿信息"
+                                                        callback(err);
+                                                    }
+                                                }
+                                            })
+
+                                        }
+                                    }
+
+                                })
+                            },
+                            function (err) {
+                                res.send(data)
+                            })
+                    }
+                })
+            }
+
+
+
+
+
+
+
+
+        })
+    };
+}
 var accepted = function (req, res) {
     //var addsql=req.body;
     var addsql = {

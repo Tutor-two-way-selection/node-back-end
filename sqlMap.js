@@ -78,6 +78,12 @@ var sqlMap = {
     },
     //导师
     teacher: {
+        select_teacher_graduate_num: "select graduatenum from teacher where id =?",
+        select_teacher_regular_num: "select regularnum from teacher where id =?",
+
+        update_teacher_graduate_num: "update teacher set graduatenum = ? where id =?",
+        update_teacher_regular_num: "update teacher set regularnum =? where id =?",
+
         select_teacheracount: 'select * from teaaccount where id = ?',
         update_teacher_selfinfo: 'update teacher set name=?,department=?,search=?,contact=? where id=?',
         //老师-志愿关系
