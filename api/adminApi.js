@@ -1,7 +1,8 @@
 var query = require("../util");
 var sqlMap = require("../sqlMap");
 var systemset = require("../systemset.json");
-var async = require("async")
+var fs = require('fs');
+var async = require("async");
 var login = function (req, res, next) {
     var sql = sqlMap.admin.login;
     //var addsql = req.body;
@@ -62,95 +63,102 @@ var stulist = function (req, res, next) {
                 var sql1 = sqlMap.student.select_file_tableBody_regular;
                 var sql2 = sqlMap.student.select_choice_regular_first;
                 var sql3 = sqlMap.student.select_choice_regular_second;
-
-                async (data.stuList, function (item, callback) {
-                    query(sql1, item.stuNum, function (err, result) {
-                        if (err) {
-                            console.log("[SELECT ERROR]:", err.message);
-                            data.err = "文件信息查询错误";
-                            callback(err);
-                        } else {
-                            var body = JSON.parse(result[0].tableBody);
-                            for (var i = 0; i < data.tableList.length; i++) {
-                                item[data.tableList[i].name] = body[data.tableList[i].name];
-                            }
-                            query(sql2, item.stuNum, function (err, result) {
-                                if (err) {
-                                    console.log("[SELECT ERROR]:", err.message);
-                                    data.err = "第一志愿查询错误";
-                                    callback(err);
-                                } else {
-                                    if (result[0]) {
-                                        item.firstChoice = result[0];
-                                    } else {
-                                        item.firstChoice = {}
-                                    }
-                                    query(sql3, item.stuNum, function (err, result) {
-                                        if (err) {
-                                            console.log("[SELECT ERROR]:", err.message);
-                                            data.err = "第二志愿查询错误";
-                                        } else {
-                                            if (result[0]) {
-                                                item.secondChoice = result[0];
-                                            } else {
-                                                item.secondChoice = {};
-                                            }
-                                            callback(null, item);
-                                        }
-                                    });
+                async.eachSeries(
+                    data.stuList,
+                    function (item, callback) {
+                        query(sql1, item.stuNum, function (err, result) {
+                            if (err) {
+                                console.log("[SELECT ERROR]:", err.message);
+                                data.err = "文件信息查询错误";
+                                callback(err);
+                            } else {
+                                var body = JSON.parse(result[0].tableBody);
+                                for (var i = 0; i < data.tableList.length; i++) {
+                                    item[data.tableList[i].name] = body[data.tableList[i].name];
                                 }
-                            });
-                        }
-                    });
-                }, function (err) {
-                    res.send(data);
-                });
+                                query(sql2, item.stuNum, function (err, result) {
+                                    if (err) {
+                                        console.log("[SELECT ERROR]:", err.message);
+                                        data.err = "第一志愿查询错误";
+                                        callback(err);
+                                    } else {
+                                        if (result[0]) {
+                                            item.firstChoice = result[0];
+                                        } else {
+                                            item.firstChoice = {};
+                                        }
+                                        query(sql3, item.stuNum, function (err, result) {
+                                            if (err) {
+                                                console.log("[SELECT ERROR]:", err.message);
+                                                data.err = "第二志愿查询错误";
+                                            } else {
+                                                if (result[0]) {
+                                                    item.secondChoice = result[0];
+                                                } else {
+                                                    item.secondChoice = {};
+                                                }
+                                                callback(null, item);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    function (err) {
+                        res.send(data);
+                    }
+                );
             } else {
                 var sql4 = sqlMap.student.select_file_tableBody_graduate;
                 var sql5 = sqlMap.student.select_choice_graduate_first;
                 var sql6 = sqlMap.student.select_choice_graduate_second;
-                async (data.stuList, function (item, callback) {
-                    query(sql4, item.stuNum, function (err, result) {
-                        if (err) {
-                            console.log("[SELECT ERROR]:", err.message);
-                            data.err = "文件信息查询错误";
-                            callback(err);
-                        } else {
-                            var body = JSON.parse(result[0].tableBody);
-                            for (var i = 0; i < data.tableList.length; i++) {
-                                item[data.tableList[i].name] = body[data.tableList[i].name];
-                            }
-                            query(sql5, item.stuNum, function (err, result) {
-                                if (err) {
-                                    console.log("[SELECT ERROR]:", err.message);
-                                    data.err = "第一志愿查询错误";
-                                    callback(err);
-                                } else {
-                                    if (result[0]) {
-                                        item.firstChoice = result[0];
-                                    } else {
-                                        item.firstChoice = {}
-                                    }
-                                    query(sql6, item.stuNum, function (err, result) {
-                                        if (err) {
-                                            console.log("[SELECT ERROR]:", err.message);
-                                            data.err = "第二志愿查询错误";
-                                        } else {
-                                            if (result[0]) {
-                                                item.secondChoice = result[0];
-                                            } else {
-                                                item.secondChoice = {};
-                                            }
-                                            callback(null, item);
-                                        }
-                                    });
+                async.eachSeries(
+                    data.stuList,
+                    function (item, callback) {
+                        query(sql4, item.stuNum, function (err, result) {
+                            if (err) {
+                                console.log("[SELECT ERROR]:", err.message);
+                                data.err = "文件信息查询错误";
+                                callback(err);
+                            } else {
+                                var body = JSON.parse(result[0].tableBody);
+                                for (var i = 0; i < data.tableList.length; i++) {
+                                    item[data.tableList[i].name] = body[data.tableList[i].name];
                                 }
-                            });
-                        }
-                    });
-                }, function (err) {
-                    res.send(data);
-                });
+                                query(sql5, item.stuNum, function (err, result) {
+                                    if (err) {
+                                        console.log("[SELECT ERROR]:", err.message);
+                                        data.err = "第一志愿查询错误";
+                                        callback(err);
+                                    } else {
+                                        if (result[0]) {
+                                            item.firstChoice = result[0];
+                                        } else {
+                                            item.firstChoice = {};
+                                        }
+                                        query(sql6, item.stuNum, function (err, result) {
+                                            if (err) {
+                                                console.log("[SELECT ERROR]:", err.message);
+                                                data.err = "第二志愿查询错误";
+                                            } else {
+                                                if (result[0]) {
+                                                    item.secondChoice = result[0];
+                                                } else {
+                                                    item.secondChoice = {};
+                                                }
+                                                callback(null, item);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    function (err) {
+                        res.send(data);
+                    }
+                );
             }
         }
     });
@@ -158,14 +166,14 @@ var stulist = function (req, res, next) {
 var situation = function (req, res, next) {
     var addsql = req.body;
     /*var addsql={
-          admNum:'123456',
-          type:'regular',
-          batch:1
-      }*/
+            admNum:'123456',
+            type:'regular',
+            batch:1
+        }*/
     var data = {
         stuList: ""
     };
-    if (type === "regular") {
+    if (addsql.type === "regular") {
         if (batch == 1) {
             var sql0 = sqlMap.admin.select_first_regular;
             query(sql0, addsql.grade, function (err, result) {
@@ -176,23 +184,26 @@ var situation = function (req, res, next) {
                 } else {
                     data.stuList = result;
                     var sql = sqlMap.admin.update_result_regularid;
-                    async (data.stuList, function (d, callback) {
-                        if (d.status === 'accept') {
-                            query(sql, [d.teaID, d.stuNum], function (err, result) {
-                                if (err) {
-                                    console.log("[UPDATE ERROR]:", err.message);
-                                    data.err = "result表更新失败",
-                                        callback(err)
-                                } else {
-                                    callback(null, d)
-                                }
-                            });
-                        } else {
-                            callback(null, d)
+                    async.eachSeries(
+                        data.stuList,
+                        function (d, callback) {
+                            if (d.status === "accept") {
+                                query(sql, [d.teaID, d.stuNum], function (err, result) {
+                                    if (err) {
+                                        console.log("[UPDATE ERROR]:", err.message);
+                                        (data.err = "result表更新失败"), callback(err);
+                                    } else {
+                                        callback(null, d);
+                                    }
+                                });
+                            } else {
+                                callback(null, d);
+                            }
+                        },
+                        function (err) {
+                            res.send(data);
                         }
-                    }, function (err) {
-                        res.send(data);
-                    }); //如果一志愿被录取，则更新result表
+                    ); //如果一志愿被录取，则更新result表
                 }
             });
         } else if (batch == 2) {
@@ -205,23 +216,26 @@ var situation = function (req, res, next) {
                 } else {
                     data.stuList = result;
                     var sql = sqlMap.admin.update_result_regularid;
-                    async (data.stuList, function (d, callback) {
-                        if (d.status === 'accept') {
-                            query(sql, [d.teaID, d.stuNum], function (err, result) {
-                                if (err) {
-                                    console.log("[UPDATE ERROR]:", err.message);
-                                    data.err = "result表更新失败",
-                                        callback(err)
-                                } else {
-                                    callback(null, d)
-                                }
-                            });
-                        } else {
-                            callback(null, d)
+                    async.eachSeries(
+                        data.stuList,
+                        function (d, callback) {
+                            if (d.status === "accept") {
+                                query(sql, [d.teaID, d.stuNum], function (err, result) {
+                                    if (err) {
+                                        console.log("[UPDATE ERROR]:", err.message);
+                                        (data.err = "result表更新失败"), callback(err);
+                                    } else {
+                                        callback(null, d);
+                                    }
+                                });
+                            } else {
+                                callback(null, d);
+                            }
+                        },
+                        function (err) {
+                            res.send(data);
                         }
-                    }, function (err) {
-                        res.send(data);
-                    });
+                    );
                 }
             });
         } else {}
@@ -237,24 +251,26 @@ var situation = function (req, res, next) {
                     data.stuList = result;
                     //如果一志愿被录取，则更新result表
                     var sql = sqlMap.admin.update_result_graduateid;
-                    async (data.stuList, function (d, callback) {
-                        if (d.status === 'accept') {
-                            query(sql, [d.teaID, d.stuNum], function (err, result) {
-                                if (err) {
-                                    console.log("[UPDATE ERROR]:", err.message);
-                                    data.err = "result表更新失败",
-                                        callback(err)
-                                } else {
-                                    callback(null, d)
-                                }
-                            });
-                        } else {
-                            callback(null, d)
+                    async.eachSeries(
+                        data.stuList,
+                        function (d, callback) {
+                            if (d.status === "accept") {
+                                query(sql, [d.teaID, d.stuNum], function (err, result) {
+                                    if (err) {
+                                        console.log("[UPDATE ERROR]:", err.message);
+                                        (data.err = "result表更新失败"), callback(err);
+                                    } else {
+                                        callback(null, d);
+                                    }
+                                });
+                            } else {
+                                callback(null, d);
+                            }
+                        },
+                        function (err) {
+                            res.send(data);
                         }
-                    }, function (err) {
-                        res.send(data);
-                    });
-
+                    );
                 }
             });
         } else if (batch == 2) {
@@ -267,23 +283,26 @@ var situation = function (req, res, next) {
                 } else {
                     data.stuList = result;
                     var sql = sqlMap.admin.update_result_graduateid;
-                    async (data.stuList, function (d, callback) {
-                        if (d.status === 'accept') {
-                            query(sql, [d.teaID, d.stuNum], function (err, result) {
-                                if (err) {
-                                    console.log("[UPDATE ERROR]:", err.message);
-                                    data.err = "result表更新失败",
-                                        callback(err)
-                                } else {
-                                    callback(null, d)
-                                }
-                            });
-                        } else {
-                            callback(null, d)
+                    async.eachSeries(
+                        data.stuList,
+                        function (d, callback) {
+                            if (d.status === "accept") {
+                                query(sql, [d.teaID, d.stuNum], function (err, result) {
+                                    if (err) {
+                                        console.log("[UPDATE ERROR]:", err.message);
+                                        (data.err = "result表更新失败"), callback(err);
+                                    } else {
+                                        callback(null, d);
+                                    }
+                                });
+                            } else {
+                                callback(null, d);
+                            }
+                        },
+                        function (err) {
+                            res.send(data);
                         }
-                    }, function (err) {
-                        res.send(data);
-                    });
+                    );
                 }
             });
         } else {}
@@ -292,13 +311,13 @@ var situation = function (req, res, next) {
 var undistri = function (req, res, next) {
     //var addsql=req.body;
     var addsql = {
-        grade: '2017',
+        grade: "2017",
         type: "regular"
     };
     var data = {
         stuList: ""
     };
-    if (type === "regular") {
+    if (addsql.type === "regular") {
         var sql = sqlMap.admin.select_resultnull_regularid;
         query(sql, addsql.grade, function (err, result) {
             if (err) {
@@ -325,248 +344,295 @@ var undistri = function (req, res, next) {
 var setbatch = function (req, res, next) {
     //var addsql=req.body;
     var addsql = {
-        admNum: "123456",
-        type: "regular",
-        batch: 1
-    };
+        grade: '2017',
+        type: 'regular',
+        batch: 2
+    }
     var data = {
         success: false
     };
     //初始值为1
-    var rbatch = 1;
-    var gbatch = 1;
-    var rsql = sqlMap.admin.update_batch_regular;
-    var gsql = sqlMap.admin.update_batch_graduate;
-    if (type === "regular") {
-        if (batch == 1) {
-            var sql0 = sqlMap.admin.first_success_regular;
-            query(sql0, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result.length == 0) {
-                    data.success = true;
-                    //如果一轮全部处理，则修改rbatch为2
-                    rbatch = 2;
-                    query(rsql, [rbatch, addsql.admNum], function (err, result) {
-                        if (err) {
-                            console.log("[UPDATE ERROR]", err.message);
-                        }
-                        console, log("batch修改成功");
-                    });
-                }
-                res.send(data);
-            });
-        } else if (batch == 2) {
-            var sql1 = sqlMap.admin.second_success_regular;
-            query(sql1, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result.length == 0) {
-                    data.success = true;
-                    //如果二轮全部处理，则修改rbatch为3
-                    rbatch = 3;
-                    query(rsql, [rbatch, addsql.admNum], function (err, result) {
-                        if (err) {
-                            console.log("[UPDATE ERROR]", err.message);
-                        }
-                        console, log("batch修改成功");
-                    });
-                }
-                res.send(data);
-            });
-        } else if (batch == 3) {
-            //result表里的不调剂的学生都有导师，则成功
-            var sql2 = sqlMap.admin.select_resultall_regularid;
-            query(sql2, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result.length == 0) {
-                    data.success = true;
-                    //修改batch为4
-                    rbatch = 4;
-                    query(rsql, [rbatch, addsql.admNum], function (err, result) {
-                        if (err) {
-                            console.log("[UPDATE ERROR]", err.message);
-                        }
-                        console, log("batch修改成功");
-                    });
-                }
-                res.send(data);
-            });
-        } else if (batch == 4) {
-            var sql3 = sqlMap.admin.select_time_regular;
-            query(sql3, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result[0].rpstart == null || result[0].rpend == null) {
-                    res.send(data);
-                }
-                data.success = true;
-                //修改batch为4
-                rbatch = 5;
-                query(rsql, [rbatch, addsql.admNum], function (err, result) {
+    if (addsql.type === "regular") {
+        if (systemset.batch.regular[addsql.grade] === 1) {
+            if (addsql.batch === 2) {
+                var sql0 = sqlMap.admin.first_success_regular;
+                query(sql0, addsql.grade, function (err, result) {
                     if (err) {
-                        console.log("[UPDATE ERROR]", err.message);
+                        console.log("[SELECT ERROR]:", err.message);
+                        data.success = false;
+                        data.err = "第一批志愿确认错误"
+                        res.send(data);
+                    } else {
+                        if (result[0]) {
+                            data.success = false;
+                            data.err = "仍有第一批志愿未被确认"
+                            res.send(data);
+                        } else {
+                            systemset.batch.regular[addsql.grade] = 2;
+                            var str = JSON.stringify(systemset);
+                            fs.writeFile('systemset.json', str, function (err) {
+                                if (err) {
+                                    data.success = false;
+                                    data.err = "写入失败";
+                                    res.send(data);
+                                } else {
+                                    console.log(str);
+                                    data.success = true;
+                                    res.send(data);
+                                }
+                            })
+                        }
                     }
-                    console, log("batch修改成功");
                 });
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
                 res.send(data);
-            });
+            }
+        } else if (systemset.batch.regular[addsql.grade] === 2) {
+            if (addsql.batch === 3) {
+                var sql1 = sqlMap.admin.second_success_regular;
+                query(sql1, addsql.grade, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        data.err = "第二批志愿确认错误"
+                        res.send(data);
+                    } else {
+                        if (result[0]) {
+                            data.success = false;
+                            data.err = "仍有第二批志愿未被确认"
+                            res.send(data);
+                        } else {
+                            //如果二轮全部处理，则修改rbatch为3
+                            systemset.batch.regular[addsql.grade] = 3;
+                            var str = JSON.stringify(systemset);
+                            fs.writeFile('systemset.json', str, function (err) {
+                                if (err) {
+                                    data.success = false;
+                                    data.err = "写入失败";
+                                    res.send(data);
+                                } else {
+                                    data.success = true;
+                                    res.send(data);
+                                }
+                            })
+                        }
+                    }
+                });
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
+                res.send(data);
+            }
+        } else if (systemset.batch.regular[addsql.grade] === 3) {
+            if (addsql.batch === 4) {
+                //result表里的不调剂的学生都有导师，则成功
+
+                var sql2 = sqlMap.admin.select_resultall_regularid;
+                query(sql2, addsql.grade, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        data.err = "最终结果确认错误"
+                        res.send(data);
+                    } else {
+
+                        if (result[0]) {
+                            data.success = false;
+                            data.err = "仍有学生未被调剂"
+                            res.send(data);
+                        } else {
+                            systemset.batch.regular[addsql.grade] = 4;
+                            var str = JSON.stringify(systemset);
+                            fs.writeFile('systemset.json', str, function (err) {
+                                if (err) {
+                                    data.success = false;
+                                    data.err = "写入失败";
+                                    res.send(data);
+                                } else {
+                                    data.success = true;
+                                    res.send(data);
+                                }
+                            })
+                        }
+                    }
+                });
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
+                res.send(data);
+            }
+        } else if (systemset.batch.regular[addsql.grade] === 4) {
+            if (addsql.batch === 4) {
+                systemset.batch.regular[addsql.grade] = 4;
+                var str = JSON.stringify(systemset);
+                fs.writeFile('../systemset.json', str, function (err) {
+                    if (err) {
+                        data.success = false;
+                        data.err = "写入失败";
+                        res.send(data);
+                    } else {
+                        data.success = true;
+                        res.send(data);
+                    }
+                })
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
+                res.send(data);
+            }
         } else {
-            //判断现在时间与结束时间是否相同
-            var sql4 = sqlMap.admin.select_time_regular;
-            query(sql4, addsql.stuNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                var oldtime = new Date(result[0].rpend);
-                var newtime = new Date();
-                if (newtime - oldtime == 0) {
-                    data.success = true;
-                }
-                res.send(data);
-            });
+            data.success = false;
+            data.err = "非法进度转换";
+            res.send(data);
         }
     } else {
-        if (batch == 1) {
-            var sql0 = sqlMap.admin.first_success_graduate;
-            query(sql0, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result.length == 0) {
-                    data.success = true;
-                    //如果一轮全部处理，则修改rbatch为2
-                    gbatch = 2;
-                    query(rsql, [gbatch, addsql.admNum], function (err, result) {
-                        if (err) {
-                            console.log("[UPDATE ERROR]", err.message);
-                        }
-                        console, log("batch修改成功");
-                    });
-                }
-                res.send(data);
-            });
-        } else if (batch == 2) {
-            var sql1 = sqlMap.admin.second_success_graduate;
-            query(sql1, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result.length == 0) {
-                    data.success = true;
-                    //如果二轮全部处理，则修改rbatch为3
-                    gbatch = 3;
-                    query(rsql, [gbatch, addsql.admNum], function (err, result) {
-                        if (err) {
-                            console.log("[UPDATE ERROR]", err.message);
-                        }
-                        console, log("batch修改成功");
-                    });
-                }
-                res.send(data);
-            });
-        } else if (batch == 3) {
-            //result表里的不调剂的学生都有导师，则成功
-            var sql2 = sqlMap.admin.select_resultall_graduateid;
-            query(sql2, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result.length == 0) {
-                    data.success = true;
-                    //修改batch为4
-                    gbatch = 4;
-                    query(rsql, [gbatch, addsql.admNum], function (err, result) {
-                        if (err) {
-                            console.log("[UPDATE ERROR]", err.message);
-                        }
-                        console, log("batch修改成功");
-                    });
-                }
-                res.send(data);
-            });
-        } else if (batch == 4) {
-            var sql3 = sqlMap.admin.select_time_graduate;
-            query(sql3, addsql.admNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                if (result[0].gpstart == null || result[0].gpend == null) {
-                    res.send(data);
-                }
-                data.success = true;
-                //修改batch为4
-                gbatch = 5;
-                query(rsql, [gbatch, addsql.admNum], function (err, result) {
+        if (systemset.batch.graduate[addsql.grade] === 1) {
+            if (addsql.batch === 2) {
+                var sql3 = sqlMap.admin.first_success_graduate;
+                query(sql3, addsql.grade, function (err, result) {
                     if (err) {
-                        console.log("[UPDATE ERROR]", err.message);
+                        console.log("[SELECT ERROR]:", err.message);
+                        data.success = false;
+                        data.err = "第一批志愿确认错误"
+                        res.send(data);
+                    } else {
+                        if (result[0]) {
+                            data.success = false;
+                            data.err = "仍有第一批志愿未被确认"
+                            res.send(data);
+                        } else {
+                            systemset.batch.graduate[addsql.grade] = 2;
+                            var str = JSON.stringify(systemset);
+                            fs.writeFile('systemset.json', str, function (err) {
+                                if (err) {
+                                    data.success = false;
+                                    data.err = "写入失败";
+                                    res.send(data);
+                                } else {
+                                    data.success = true;
+                                    res.send(data);
+                                }
+                            })
+                        }
                     }
-                    console, log("batch修改成功");
                 });
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
                 res.send(data);
-            });
+            }
+        } else if (systemset.batch.graduate[addsql.grade] === 2) {
+            if (addsql.batch === 3) {
+                var sql4 = sqlMap.admin.second_success_graduate;
+                query(sql4, addsql.grade, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        data.err = "第二批志愿确认错误"
+                        res.send(data);
+                    } else {
+                        if (result[0]) {
+                            data.success = false;
+                            data.err = "仍有第二批志愿未被确认"
+                            res.send(data);
+                        } else {
+                            //如果二轮全部处理，则修改rbatch为3
+                            systemset.batch.graduate[addsql.grade] = 3;
+                            var str = JSON.stringify(systemset);
+                            fs.writeFile('systemset.json', str, function (err) {
+                                if (err) {
+                                    data.success = false;
+                                    data.err = "写入失败";
+                                    res.send(data);
+                                } else {
+                                    data.success = true;
+                                    res.send(data);
+                                }
+                            })
+                        }
+                    }
+                });
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
+                res.send(data);
+            }
+        } else if (systemset.batch.graduate[addsql.grade] === 3) {
+            if (addsql.batch === 4) {
+                //result表里的不调剂的学生都有导师，则成功
+
+                var sql5 = sqlMap.admin.select_resultall_graduateid;
+                query(sql5, addsql.grade, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        data.err = "最终结果确认错误"
+                        res.send(data);
+                    } else {
+
+                        if (result[0]) {
+                            data.success = false;
+                            data.err = "仍有学生未被调剂"
+                            res.send(data);
+                        } else {
+                            systemset.batch.graduate[addsql.grade] = 4;
+                            var str = JSON.stringify(systemset);
+                            fs.writeFile('systemset.json', str, function (err) {
+                                if (err) {
+                                    data.success = false;
+                                    data.err = "写入失败";
+                                    res.send(data);
+                                } else {
+                                    data.success = true;
+                                    res.send(data);
+                                }
+                            })
+                        }
+                    }
+                });
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
+                res.send(data);
+            }
+        } else if (systemset.batch.graduate[addsql.grade] === 4) {
+            if (addsql.batch === 4) {
+                systemset.batch.graduate[addsql.grade] = 4;
+                var str1 = JSON.stringify(systemset);
+                fs.writeFile('systemset.json', str1, function (err) {
+                    if (err) {
+                        data.success = false;
+                        data.err = "写入失败";
+                        res.send(data);
+                    } else {
+                        data.success = true;
+                        res.send(data);
+                    }
+                })
+            } else {
+                data.success = false;
+                data.err = "非法进度转换";
+                res.send(data);
+            }
         } else {
-            //判断现在时间与结束时间是否相同
-            var sql4 = sqlMap.admin.select_time_graduate;
-            query(sql4, addsql.stuNum, function (err, result) {
-                if (err) {
-                    console.log("[SELECT ERROR]:", err.message);
-                    res.send(data);
-                }
-                var oldtime = new Date(result[0].gpend);
-                var newtime = new Date();
-                if (newtime - oldtime == 0) {
-                    data.success = true;
-                }
-                res.send(data);
-            });
+            data.success = false;
+            data.err = "非法进度转换";
+            res.send(data);
         }
     }
-};
+}
 var querybatch = function (req, res, next) {
     //var addsql=req.body;
     var addsql = {
-        admNum: "123456",
+        grade: '2017',
         type: "regular"
     };
-    var data = {
-        batch: 1
-    };
-    if (type === "regular") {
-        var sql0 = sqlMap.admin.select_batch_regular;
-        query(sql0, admNum, function (err, result) {
-            if (err) {
-                console.log("SELECT ERROR", err.message);
-                res.send(data);
-            }
-            data.batch = result;
-            res.send(data);
-        });
+    var data = {};
+    if (addsql.type === 'regular') {
+        data.batch = systemset.batch.regular[addsql.grade];
     } else {
-        var sql1 = sqlMap.admin.select_batch_graduate;
-        query(sql1, admNum, function (err, result) {
-            if (err) {
-                console.log("SELECT ERROR", err.message);
-                res.send(data);
-            }
-            data.batch = result;
-            res.send(data);
-        });
+        data.batch = systemset.batch.graduate[addsql.grade];
     }
+    res.send(data);
+
 };
 //手动分配
 var manual = function (req, res, next) {
@@ -580,82 +646,80 @@ var manual = function (req, res, next) {
         }]
     };
     var data = {
-        success: false
+        success: true
     };
     if (type === "regular") {
         var sql0 = sqlMap.admin.update_result_regularid;
-        addsql.manualList.forEach(function (d, i) {
+        async.eachSeries(addsql.manualList, function (d, callback) {
             query(sql0, [d.stuID, d.teaID], function (err, result) {
                 if (err) {
                     console.log("[SELECT ERROR]:", err.message);
                     data.err = "服务器错误";
-                    res.send(data);
-                    break;
+                    data.success = false;
+                    callback(err)
+
                 } else {
-                    if (i == addsql.manualList.length) {
-                        data.success = true;
-                        res.send(data);
-                    }
+                    callback(null, d);
                 }
             });
+        }, function (err) {
+            res.send(data)
         });
     } else {
         var sql1 = sqlMap.admin.update_result_graduateid;
-        addsql.manualList.forEach(function (d, i) {
+        async.eachSeries(addsql.manualList, function (d, callback) {
             query(sql1, [d.stuID, d.teaID], function (err, result) {
                 if (err) {
                     console.log("[SELECT ERROR]:", err.message);
                     data.err = "服务器错误";
-                    res.send(data);
-                    break;
+                    data.success = false;
+                    callback(err)
+
                 } else {
-                    if (i == addsql.manualList.length) {
-                        data.success = true;
-                        res.send(data);
-                    }
+                    callback(null, d);
                 }
             });
+        }, function (err) {
+            res.send(data)
         });
-        data.success = true;
-        res.send(data);
     }
 };
 var setpub = function (req, res, next) {
     //var addsql=req.body;
     var addsql = {
-        admNum: "123456",
-        type: "regular",
-        start: "2020-02-03T16:00:00.000Z",
-        end: "2020-02-28T16:00:00.000Z"
-    };
+        grade: '2017',
+        type: 'regular',
+        start: '2020-02-03T16:00:00.000Z',
+        end: '2020-02-28T16:00:00.000Z'
+    }
     var data = {
         sucess: false
     };
-    if (type === "regular") {
-        var sql0 = sqlMap.admin.update_time_regular;
-        query(sql0, [addsql.start, addsql.end, addsql.admNum], function (
-            err,
-            result
-        ) {
+    if (addsql.type === "regular") {
+        systemset.start.regular[addsql.grade] = addsql.start;
+        systemset.end.regular[addsql.grade] = addsql.end;
+        var str = JSON.stringify(systemset);
+        fs.writeFile('systemset.json', str, function (err) {
             if (err) {
-                console.log("[UPDATE ERROR]:", err.message);
+                data.success = false;
+                data.err = "写入失败";
                 res.send(data);
             } else {
-                data.sucess = true;
+                data.success = true;
                 res.send(data);
             }
         });
     } else {
-        var sql1 = sqlMap.admin.update_time_graduate;
-        query(sql1, [addsql.start, addsql.end, addsql.admNum], function (
-            err,
-            result
-        ) {
+        systemset.start.graduate[addsql.grade] = addsql.start;
+        systemset.end.graduate[addsql.grade] = addsql.end;
+        var str1 = JSON.stringify(systemset);
+        fs.writeFile('systemset.json', str1, function (err) {
             if (err) {
-                console.log("[UPDATE ERROR]:", err.message);
+                data.success = false;
+                data.err = "写入失败";
                 res.send(data);
             } else {
-                data.sucess = true;
+                data.success = true;
                 res.send(data);
             }
         });
@@ -664,43 +728,27 @@ var setpub = function (req, res, next) {
 var querypub = function (req, res, next) {
     //var addsql=req.body;
     var addsql = {
-        admNum: "123456",
-        type: "regular"
-    };
+        grade: '2017',
+        type: 'regular'
+    }
     var data = {
         start: "",
         end: ""
     };
     if (type === "regular") {
-        var sql0 = sqlMap.admin.select_time_regular;
-        query(sql0, addsql.admNum, function (err, result) {
-            if (err) {
-                console.log("SELECT ERROR", err.message);
-                res.send(data);
-            } else {
-                data.start = result.rpstart;
-                data.end = result.rpend;
-                res.send(data);
-            }
-        });
+        data.start = systemset.start.regular[addsql.grade];
+        data.end = systemset.end.regular[addsql.grade];
+        res.send(data);
     } else {
-        var sql1 = sqlMap.admin.select_time_graduate;
-        query(sql1, addsql.admNum, function (err, result) {
-            if (err) {
-                console.log("SELECT ERROR", err.message);
-                res.send(data);
-            } else {
-                data.start = result.gpstart;
-                data.end = result.gpend;
-                res.send(data);
-            }
-        });
+        data.start = systemset.start.graduate[addsql.grade];
+        data.end = systemset.end.graduate[addsql.grade];
+        res.send(data);
     }
 };
 var final = function (req, res, next) {
     //var addsql=req.body;
     var addsql = {
-        admNum: "123456",
+        grade: "2017",
         type: "regular"
     };
     var data = {
@@ -708,7 +756,7 @@ var final = function (req, res, next) {
     };
     if (type === "regular") {
         var sql0 = sqlMap.admin.select_final_regular;
-        query(sql0, addsql.admNum, function (err, result) {
+        query(sql0, addsql.grade, function (err, result) {
             if (err) {
                 console.log("SELECT ERROR", err.message);
                 res.send(data);
@@ -719,7 +767,7 @@ var final = function (req, res, next) {
         });
     } else {
         var sql1 = sqlMap.admin.select_final_graduate;
-        query(sql1, addsql.admNum, function (err, result) {
+        query(sql1, addsql.grade, function (err, result) {
             if (err) {
                 console.log("SELECT ERROR", err.message);
                 res.send(data);
@@ -730,6 +778,84 @@ var final = function (req, res, next) {
         });
     }
 };
+var addStu = function (req, res, next) {
+    var addsql = {
+        grade: "2016",
+        stuList: [{
+            name: "张三",
+            id: "201701010101",
+            classes: "class1",
+            contact: "123456789",
+            initpass: "090617"
+
+        }, {
+            name: "李四",
+            id: "201701010102",
+            classes: "class2",
+            contact: "123456789",
+            initpass: "090617"
+        }, {
+            name: "王五",
+            id: "201701010103",
+            classes: "class1",
+            contact: "123456789",
+            initpass: "090617"
+        }]
+    }
+    var data = {
+        success: true
+    }
+    var sql0 = sqlMap.admin.insert_stu;
+    var sql1 = sqlMap.admin.insert_stuaccount;
+    var sql2 = sqlMap.admin.insert_result;
+    var sql3 = sqlMap.admin.insert_regular;
+    var sql4 = sqlMap.admin.insert_graduate;
+    async.eachSeries(addsql.stuList, function (item, callback) {
+        query(sql0, [item.id, item.name, item.classes, item.contact, addsql.grade], function (err) {
+            if (err) {
+                data.err = item.id + "加入学生基本信息失败";
+                data.success = false;
+                callback(err);
+            } else {
+                query(sql1, [item.id, item.initpass, item.initpass], function (err) {
+                    if (err) {
+                        data.err = item.id + "加入学生账户失败";
+                        data.success = false;
+                        callback(err);
+                    } else {
+                        query(sql2, item.id, function (err) {
+                            if (err) {
+                                data.err = item.id + "加入结果表失败"
+                                data.success = false;
+                                callback(err);
+                            } else {
+                                query(sql3, item.id, function (err) {
+                                    if (err) {
+                                        data.err = item.id + "加入regular表失败"
+                                        data.success = false;
+                                        callback(err);
+                                    } else {
+                                        query(sql4, item.id, function (err) {
+                                            if (err) {
+                                                data.err = item.id + "加入regular表失败";
+                                                data.success = false;
+                                                callback(err);
+                                            } else {
+                                                callback(null, item);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }, function (err) {
+        res.send(data)
+    });
+}
 module.exports = {
     login,
     stulist,
@@ -740,5 +866,6 @@ module.exports = {
     querypub,
     querybatch,
     setbatch,
-    final
+    final,
+    addStu
 };

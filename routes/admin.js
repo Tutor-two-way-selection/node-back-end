@@ -16,4 +16,5 @@ router.get("/querypub", adminservices.querypub)
 router.get("/querybatch", adminservices.querybatch)
 router.get("/setbatch", adminservices.setbatch)
 router.get("/final", adminservices.final)
+router.get("/addStu", adminservices.addStu)
 module.exports = router

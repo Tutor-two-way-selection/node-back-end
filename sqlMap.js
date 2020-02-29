@@ -145,28 +145,22 @@ var sqlMap = {
         select_resultall_graduateid: "select result.stuNum from result,student where result.stuNum in(select stuNum from graduatechoice where adjust=1) and graduateid is NULL and stuGrade =? and result.stuNum=student.stuNum",
         //志愿全被处理
         first_success_regular: "select student.stuNum from regularchoice ,student where statusFirst='untreat' and stuGrade =? and student.stuNum=regularchoice.stuNum ",
-        second_success_regular: "select student.stuNum from regularchoice ,student where statusSecond='untreat' and stuGrade =? and student.stuNum=regularchoice.stuNum",
+        second_success_regular: "select student.stuNum from regularchoice ,student where statusSecond='untreat' and stuGrade =? and student.stuNum = regularchoice.stuNum",
         first_success_graduate: "select student.stuNum from graduatechoice ,student where statusFirst='untreat' and stuGrade =? and student.stuNum=graduatechoice.stuNum",
         second_success_graduate: "select student.stuNum from graduatechoice ,student where statusSecond='untreat' and stuGrade =? and student.stuNum=graduatechoice.stuNum",
 
 
-        //修改batch
-        update_batch_regular: 'update admin set rbatch=? where adminNum=?',
-        update_batch_graduate: 'update admin set gbatch=? where adminNum=?',
 
-        //增加公示时间
-        update_time_regular: 'update admin set rpstart=? ,rpend=? where adminNum=?',
-        update_time_graduate: 'update admin set gpstart=? ,gpend=? where adminNum=?',
-
-        //查询公示时间
-        select_time_regular: 'select rpstart,rpend from admin where adminNum=?',
-        select_time_graduate: 'select gpstart,gpend from admin where adminNum=?',
 
         //最后的结果
         select_final_graduate: 'select stuName,student.stuNum,stuClass,stuTelephone,`name`,id from student,teacher,result where student.stuNum=result.stuNum and teacher.id=result.graduateid and stuGrade=?',
         select_final_regular: 'select stuName,student.stuNum,stuClass,stuTelephone,`name`,id from student,teacher,result where student.stuNum=result.stuNum and teacher.id=result.regularid and stuGrade=?',
 
-
+        insert_graduate: "insert into graduatechoice(stuNum) values(?)",
+        insert_regular: "insert into regularchoice(stuNum) values(?)",
+        insert_result: "insert into result(stuNum) values(?)",
+        insert_stu: "insert into student(stuNum,stuName,stuClass,stuTelephone,stuGrade) values(?,?,?,?,?)",
+        insert_stuaccount: "insert into stuaccount(stuNum,initPass,stuPass,passChanged) values(?,?,?,0)"
 
 
 
