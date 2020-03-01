@@ -537,6 +537,48 @@ var readinfo = function (req, res) {
     }
 };
 
+var baseInfo=function(req,res){
+    //var addsql=req.body;
+    var addsql={
+        stuID:'201701010101'
+    }
+    var data;
+    var sql=sqlMap.student.select_mymessage;
+    query(sql,addsql.stuID,function(err,result){
+        if(err){
+            console.log("[SELECT ERROR]:", err.message);
+            data.err = "服务器错误";
+            res.send(data);
+        }
+        data=result;
+        res.send(data);
+    });
+}
+var changeBaseInfo=function(req,res){
+    //var addsql=req.body;
+    var addsql={
+        stuID:'201701010101',
+        stuName:'张三',
+        classes:'class1',
+        grade:'2017',
+        contact:'123456'
+    }
+    var data={
+        success:false
+    }
+    var sql=sqlMap.student.update_mymessage;
+    query(sql,[addsql.stuName,addsql.classes,addsql.grade,addsql.contact,addsql.stuID],function(err,result){
+        if(err){
+            console.log("[UPDATE ERROR]:", err.message);
+            data.err = "服务器错误";
+            res.send(data);
+        }else{
+            data.success=true;
+            res.send(data);
+        }
+
+    });
+}
 module.exports = {
     stulogin,
     changePass,
@@ -547,5 +589,8 @@ module.exports = {
     chooseGraduate,
     readinfo,
     writeinfo,
+    baseInfo,
+    changeBaseInfo
+
 
 }

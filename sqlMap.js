@@ -19,6 +19,10 @@ var sqlMap = {
         select_allRegularTeacher: 'select * from teacher where isregular = 1',
         //查看某个导师
         select_oneteacher: 'select * from teacher where id = ?',
+        //查询自己的信息
+        select_mymessage:'select stuName,stuClass,stuGrade,stuTelephone from student where stuNum=?',
+        //修改信息
+        update_mymessage:'update student set stuName=?,stuClass=?,stuGrade=?,stuTelephone+? from student where stuNum=?'
 
 
         //所有导师按部门
