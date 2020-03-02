@@ -2,13 +2,13 @@ var express = require("express");
 var router = express.Router();
 var teacherservices = require("../api/teacherApi");
 
-router.get("/", function (req, res, next) {
+router.post("/", function (req, res, next) {
     res.send("respond with a resource");
 });
-router.get("/login", teacherservices.login)
-router.get("/info", teacherservices.info)
-router.get("/changeinfo", teacherservices.changeinfo)
-router.get("/stuinfo", teacherservices.stuinfo)
-router.get("/selectstu", teacherservices.selectstu)
-router.get("/accepted", teacherservices.accepted)
+router.post("/login", teacherservices.login)
+router.post("/info", teacherservices.info)
+router.post("/changeinfo", teacherservices.changeinfo)
+router.post("/stuinfo", teacherservices.stuinfo)
+router.post("/selectstu", teacherservices.selectstu)
+router.post("/accepted", teacherservices.accepted)
 module.exports = router

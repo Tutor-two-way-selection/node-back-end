@@ -4,14 +4,14 @@ var async = require("async");
 var systemset = require("../systemset.json");
 var login = function (req, res) {
     var sql = sqlMap.teacher.select_teacheracount;
-    //var addsql = req.body;
+    var addsql = req.body;
     var data = {
         success: false
     };
-    var addsql = {
-        teaNum: "1001",
-        teaPass: "123456789"
-    };
+    // var addsql = {
+    //     teaNum: "1001",
+    //     teaPass: "123456789"
+    // };
     query(sql, addsql.teaNum, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
@@ -39,9 +39,10 @@ var login = function (req, res) {
     });
 };
 var info = function (req, res) {
-    var addsql = {
-        teaID: "1001"
-    };
+    // var addsql = {
+    //     teaID: "1001"
+    // };
+    var addsql = req.body;
     var sql = sqlMap.student.select_oneteacher;
     query(sql, addsql.teaID, function (err, result) {
         if (err) {
@@ -52,13 +53,14 @@ var info = function (req, res) {
     });
 };
 var changeinfo = function (req, res) {
-    var addsql = {
-        teaID: "1001",
-        name: "hcf",
-        department: "iuvm",
-        search: "xnadl",
-        contact: "qjeb"
-    };
+    // var addsql = {
+    //     teaID: "1001",
+    //     name: "hcf",
+    //     department: "iuvm",
+    //     search: "xnadl",
+    //     contact: "qjeb"
+    // };
+    var addsql = req.body;
     var data = {
         success: false
     };
@@ -85,11 +87,11 @@ var changeinfo = function (req, res) {
     );
 };
 var stuinfo = function (req, res) {
-    //var addsql=req.body;
-    var addsql = {
-        teaID: "1001",
-        type: "regular"
-    };
+    var addsql = req.body;
+    // var addsql = {
+    //     teaID: "1001",
+    //     type: "regular"
+    // };
     var data = {
         tableList: systemset.tableList,
         stuList: []
@@ -208,20 +210,20 @@ var stuinfo = function (req, res) {
     }
 };
 var selectstu = function (req, res) {
-    //var addsql=req.body;
-    var addsql = {
-        teaID: "1001",
-        type: "regular",
-        selStuList: [{
-                stuID: "201701010101",
-                recept: true
-            },
-            {
-                stuID: "201701010102",
-                recept: false
-            }
-        ]
-    };
+    var addsql = req.body;
+    // var addsql = {
+    //     teaID: "1001",
+    //     type: "regular",
+    //     selStuList: [{
+    //             stuID: "201701010101",
+    //             recept: true
+    //         },
+    //         {
+    //             stuID: "201701010102",
+    //             recept: false
+    //         }
+    //     ]
+    // };
     var data = {
         success: true
     };
@@ -474,11 +476,11 @@ var selectstu = function (req, res) {
     }
 };
 var accepted = function (req, res) {
-    //var addsql=req.body;
-    var addsql = {
-        teaID: "1001",
-        type: "regular"
-    };
+    var addsql = req.body;
+    // var addsql = {
+    //     teaID: "1001",
+    //     type: "regular"
+    // };
     var data = {
         tableList: "",
         stuList: ""

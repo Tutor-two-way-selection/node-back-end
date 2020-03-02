@@ -1,20 +1,17 @@
 var express = require("express");
 var router = express.Router();
 var adminservices = require("../api/adminApi");
-var systemset = require("../systemset.json")
-router.get("/", function (req, res) {
-    console.log(systemset);
-    res.send(systemset)
-})
-router.get("/login", adminservices.login)
-router.get("/stulist", adminservices.stulist)
-router.get("/situation", adminservices.situation)
-router.get("/manual", adminservices.manual)
-router.get("/undistri", adminservices.undistri)
-router.get("/setpub", adminservices.setpub)
-router.get("/querypub", adminservices.querypub)
-router.get("/querybatch", adminservices.querybatch)
-router.get("/setbatch", adminservices.setbatch)
-router.get("/final", adminservices.final)
-router.get("/addStu", adminservices.addStu)
+
+
+router.post("/login", adminservices.login)
+router.post("/stulist", adminservices.stulist)
+router.post("/situation", adminservices.situation)
+router.post("/manual", adminservices.manual)
+router.post("/undistri", adminservices.undistri)
+router.post("/setpub", adminservices.setpub)
+router.post("/querypub", adminservices.querypub)
+router.post("/querybatch", adminservices.querybatch)
+router.post("/setbatch", adminservices.setbatch)
+router.post("/final", adminservices.final)
+router.post("/addStu", adminservices.addStu)
 module.exports = router

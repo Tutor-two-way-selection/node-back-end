@@ -27,13 +27,7 @@ DROP TABLE IF EXISTS `admin`;
 CREATE TABLE `admin` (
   `adminNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `adminPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `adminGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `rbatch` int(11) DEFAULT '0',
-  `rpstart` varchar(255) DEFAULT NULL,
-  `rpend` varchar(255) DEFAULT NULL,
-  `gbatch` int(11) DEFAULT '0',
-  `gpstart` varchar(255) DEFAULT NULL,
-  `gpend` varchar(225) DEFAULT NULL,
+  `adminGrade` json DEFAULT NULL,
   PRIMARY KEY (`adminNum`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -44,7 +38,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES ('123456','123456','2017',0,NULL,NULL,0,NULL,NULL);
+INSERT INTO `admin` VALUES ('123456','123456','[2017]');
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -58,9 +52,9 @@ DROP TABLE IF EXISTS `graduatechoice`;
 CREATE TABLE `graduatechoice` (
   `stuNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `idFirst` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `statusFirst` varchar(255) DEFAULT 'untreat',
+  `statusFirst` varchar(255) DEFAULT NULL,
   `idSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `statusSecond` varchar(255) DEFAULT 'untreat',
+  `statusSecond` varchar(255) DEFAULT NULL,
   `adjust` tinyint(4) DEFAULT NULL,
   `tableBody` json DEFAULT NULL,
   PRIMARY KEY (`stuNum`) USING BTREE,
@@ -75,7 +69,7 @@ CREATE TABLE `graduatechoice` (
 
 LOCK TABLES `graduatechoice` WRITE;
 /*!40000 ALTER TABLE `graduatechoice` DISABLE KEYS */;
-INSERT INTO `graduatechoice` VALUES ('201706062629',NULL,'untreat',NULL,'untreat',NULL,NULL);
+INSERT INTO `graduatechoice` VALUES ('201701010101',NULL,NULL,NULL,NULL,NULL,NULL),('201701010102',NULL,NULL,NULL,NULL,NULL,NULL),('201701010103',NULL,NULL,NULL,NULL,NULL,NULL),('201706062629',NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `graduatechoice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,9 +83,9 @@ DROP TABLE IF EXISTS `regularchoice`;
 CREATE TABLE `regularchoice` (
   `stuNum` varchar(255) NOT NULL,
   `idFirst` varchar(255) DEFAULT NULL,
-  `statusFirst` varchar(255) DEFAULT 'untreat',
+  `statusFirst` varchar(255) DEFAULT NULL,
   `idSecond` varchar(255) DEFAULT NULL,
-  `statusSecond` varchar(255) DEFAULT 'untreat',
+  `statusSecond` varchar(255) DEFAULT NULL,
   `adjust` tinyint(4) DEFAULT NULL,
   `tableBody` json DEFAULT NULL,
   PRIMARY KEY (`stuNum`)
@@ -104,7 +98,7 @@ CREATE TABLE `regularchoice` (
 
 LOCK TABLES `regularchoice` WRITE;
 /*!40000 ALTER TABLE `regularchoice` DISABLE KEYS */;
-INSERT INTO `regularchoice` VALUES ('201706062629','1001','untreat','1003','untreat',0,'{\"choiceTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}]}, \"profileTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}, {\"url\": \"http://localhost:8080/downloadFile?filename=saidgihkdglha&oldname=va11halla.png\", \"name\": \"caster.jpg\", \"size\": 1447144, \"status\": \"success\"}]}}');
+INSERT INTO `regularchoice` VALUES ('201701010101',NULL,NULL,NULL,NULL,NULL,NULL),('201701010102',NULL,NULL,NULL,NULL,NULL,NULL),('201701010103',NULL,NULL,NULL,NULL,NULL,NULL),('201706062629','1001','accept','1003','accept',0,'{\"choiceTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}]}, \"profileTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}, {\"url\": \"http://localhost:8080/downloadFile?filename=saidgihkdglha&oldname=va11halla.png\", \"name\": \"caster.jpg\", \"size\": 1447144, \"status\": \"success\"}]}}');
 /*!40000 ALTER TABLE `regularchoice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,7 +126,7 @@ CREATE TABLE `result` (
 
 LOCK TABLES `result` WRITE;
 /*!40000 ALTER TABLE `result` DISABLE KEYS */;
-INSERT INTO `result` VALUES ('201706062629','1001','1003');
+INSERT INTO `result` VALUES ('201701010101',NULL,NULL),('201701010102',NULL,NULL),('201701010103',NULL,NULL),('201706062629',NULL,NULL);
 /*!40000 ALTER TABLE `result` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,7 +153,7 @@ CREATE TABLE `stuaccount` (
 
 LOCK TABLES `stuaccount` WRITE;
 /*!40000 ALTER TABLE `stuaccount` DISABLE KEYS */;
-INSERT INTO `stuaccount` VALUES ('201706062629','291021','1234','1');
+INSERT INTO `stuaccount` VALUES ('201706062629','291021','1234','1'),('201701010101','090617','090617','0'),('201701010102','090617','090617','0'),('201701010103','090617','090617','0');
 /*!40000 ALTER TABLE `stuaccount` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -186,7 +180,7 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES ('201706062629','张三','数字媒体技术1班','123456789','2017');
+INSERT INTO `student` VALUES ('201701010101','张三','class1','123456789','2016'),('201701010102','李四','class2','123456789','2016'),('201701010103','王五','class1','123456789','2016'),('201706062629','张三','数字媒体技术1班','123456789','2017');
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,6 +224,8 @@ CREATE TABLE `teacher` (
   `contact` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `isgraduate` tinyint(4) DEFAULT '1',
   `isregular` tinyint(4) DEFAULT '1',
+  `graduatenum` int(11) DEFAULT '0',
+  `regularnum` int(11) DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -240,7 +236,7 @@ CREATE TABLE `teacher` (
 
 LOCK TABLES `teacher` WRITE;
 /*!40000 ALTER TABLE `teacher` DISABLE KEYS */;
-INSERT INTO `teacher` VALUES ('1001','刘梅','智慧城市研究所','计算机图形学','123456789',0,1),('1002','张浩','计算机视觉研究所','图像处理','123456789',1,0),('1003','李波','软件研究所','操作系统','123456789',1,1);
+INSERT INTO `teacher` VALUES ('1001','刘梅','智慧城市研究所','计算机图形学','123456789',0,1,0,0),('1002','张浩','计算机视觉研究所','图像处理','123456789',1,0,0,0),('1003','李波','软件研究所','操作系统','123456789',1,1,0,0);
 /*!40000 ALTER TABLE `teacher` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -253,4 +249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-27 16:17:59
+-- Dump completed on 2020-03-02 12:11:58

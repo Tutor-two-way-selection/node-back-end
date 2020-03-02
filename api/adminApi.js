@@ -5,14 +5,14 @@ var fs = require('fs');
 var async = require("async");
 var login = function (req, res, next) {
     var sql = sqlMap.admin.login;
-    //var addsql = req.body;
+    var addsql = req.body;
     var data = {
         success: false
     };
-    var addsql = {
-        admNum: "123456",
-        admPass: "12345"
-    };
+    // var addsql = {
+    //     admNum: "123456",
+    //     admPass: "12345"
+    // };
     query(sql, addsql.admNum, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
@@ -43,15 +43,15 @@ var login = function (req, res, next) {
 };
 var stulist = function (req, res, next) {
     var sql0 = sqlMap.admin.stulist;
-    //var addsql = req.body;
+    var addsql = req.body;
     var data = {
         stuList: [],
         tableList: systemset.tableList
     };
-    var addsql = {
-        grade: "2017",
-        type: "regular"
-    };
+    // var addsql = {
+    //     grade: "2017",
+    //     type: "regular"
+    // };
     query(sql0, addsql.grade, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
@@ -309,11 +309,11 @@ var situation = function (req, res, next) {
     }
 };
 var undistri = function (req, res, next) {
-    //var addsql=req.body;
-    var addsql = {
-        grade: "2017",
-        type: "regular"
-    };
+    var addsql = req.body;
+    // var addsql = {
+    //     grade: "2017",
+    //     type: "regular"
+    // };
     var data = {
         stuList: ""
     };
@@ -342,12 +342,12 @@ var undistri = function (req, res, next) {
     }
 };
 var setbatch = function (req, res, next) {
-    //var addsql=req.body;
-    var addsql = {
-        grade: '2017',
-        type: 'regular',
-        batch: 2
-    }
+    var addsql = req.body;
+    // var addsql = {
+    //     grade: '2017',
+    //     type: 'regular',
+    //     batch: 2
+    // }
     var data = {
         success: false
     };
@@ -620,11 +620,11 @@ var setbatch = function (req, res, next) {
     }
 }
 var querybatch = function (req, res, next) {
-    //var addsql=req.body;
-    var addsql = {
-        grade: '2017',
-        type: "regular"
-    };
+    var addsql = req.body;
+    // var addsql = {
+    //     grade: '2017',
+    //     type: "regular"
+    // };
     var data = {};
     if (addsql.type === 'regular') {
         data.batch = systemset.batch.regular[addsql.grade];
@@ -636,15 +636,15 @@ var querybatch = function (req, res, next) {
 };
 //手动分配
 var manual = function (req, res, next) {
-    // var addsql=req.body;
-    var addsql = {
-        admNum: "123456",
-        type: "regular",
-        manualList: [{
-            stuID: "201701010103",
-            teaID: "199901010102"
-        }]
-    };
+    var addsql = req.body;
+    // var addsql = {
+    //     admNum: "123456",
+    //     type: "regular",
+    //     manualList: [{
+    //         stuID: "201701010103",
+    //         teaID: "199901010102"
+    //     }]
+    // };
     var data = {
         success: true
     };
@@ -685,13 +685,13 @@ var manual = function (req, res, next) {
     }
 };
 var setpub = function (req, res, next) {
-    //var addsql=req.body;
-    var addsql = {
-        grade: '2017',
-        type: 'regular',
-        start: '2020-02-03T16:00:00.000Z',
-        end: '2020-02-28T16:00:00.000Z'
-    }
+    var addsql = req.body;
+    // var addsql = {
+    //     grade: '2017',
+    //     type: 'regular',
+    //     start: '2020-02-03T16:00:00.000Z',
+    //     end: '2020-02-28T16:00:00.000Z'
+    // }
     var data = {
         sucess: false
     };
@@ -726,11 +726,11 @@ var setpub = function (req, res, next) {
     }
 };
 var querypub = function (req, res, next) {
-    //var addsql=req.body;
-    var addsql = {
-        grade: '2017',
-        type: 'regular'
-    }
+    var addsql = req.body;
+    // var addsql = {
+    //     grade: '2017',
+    //     type: 'regular'
+    // }
     var data = {
         start: "",
         end: ""
@@ -746,11 +746,11 @@ var querypub = function (req, res, next) {
     }
 };
 var final = function (req, res, next) {
-    //var addsql=req.body;
-    var addsql = {
-        grade: "2017",
-        type: "regular"
-    };
+    var addsql = req.body;
+    // var addsql = {
+    //     grade: "2017",
+    //     type: "regular"
+    // };
     var data = {
         stuList: ""
     };
@@ -779,29 +779,30 @@ var final = function (req, res, next) {
     }
 };
 var addStu = function (req, res, next) {
-    var addsql = {
-        grade: "2016",
-        stuList: [{
-            name: "张三",
-            id: "201701010101",
-            classes: "class1",
-            contact: "123456789",
-            initpass: "090617"
+    // var addsql = {
+    //     grade: "2016",
+    //     stuList: [{
+    //         name: "张三",
+    //         id: "201701010101",
+    //         classes: "class1",
+    //         contact: "123456789",
+    //         initpass: "090617"
 
-        }, {
-            name: "李四",
-            id: "201701010102",
-            classes: "class2",
-            contact: "123456789",
-            initpass: "090617"
-        }, {
-            name: "王五",
-            id: "201701010103",
-            classes: "class1",
-            contact: "123456789",
-            initpass: "090617"
-        }]
-    }
+    //     }, {
+    //         name: "李四",
+    //         id: "201701010102",
+    //         classes: "class2",
+    //         contact: "123456789",
+    //         initpass: "090617"
+    //     }, {
+    //         name: "王五",
+    //         id: "201701010103",
+    //         classes: "class1",
+    //         contact: "123456789",
+    //         initpass: "090617"
+    //     }]
+    // }
+    var addsql = req.body;
     var data = {
         success: true
     }
