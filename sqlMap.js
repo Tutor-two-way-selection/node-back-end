@@ -6,7 +6,7 @@ var sqlMap = {
         select_stunum: 'select * from stuaccount where stuNum = ?',
         select_num: 'select * from student where stuNum = ?', //查询 stuNum
         //修改密码
-        update_pass: "update stuaccount set stuPass=?  ,passChanged=1 where stuNum=?",
+        update_pass: "update stuaccount set stuPass=?  ,passChanged=true where stuNum=?",
         //修改个人信息...
         update: 'update student set',
         //查看自己的信息
@@ -20,9 +20,9 @@ var sqlMap = {
         //查看某个导师
         select_oneteacher: 'select * from teacher where id = ?',
         //查询自己的信息
-        select_mymessage:'select stuName,stuClass,stuGrade,stuTelephone from student where stuNum=?',
+        select_mymessage: 'select stuName,stuClass,stuGrade,stuTelephone from student where stuNum=?',
         //修改信息
-        update_mymessage:'update student set stuName=?,stuClass=?,stuGrade=?,stuTelephone+? from student where stuNum=?'
+        update_mymessage: 'update student set stuName=?,stuClass=?,stuGrade=?,stuTelephone=? from student where stuNum=?',
 
 
         //所有导师按部门
@@ -141,8 +141,8 @@ var sqlMap = {
         select_second_graduate: "select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusSecond status from student ,teacher,graduatechoice where statusFirst !='accept',student.stuNum=graduatechoice.stuNum and teacher.id=graduatechoice.idSecond and stuGrade =?",
 
         //未分配的学生
-        select_resultnull_regularid: "SELECT student.stuNum,stuName,stuClass from result,student,regularchoice where regularid is NULL and student.stuNum=regularchoice.stuNum and adjust='refuse' and result.stuNum=student.stuNum and stuGrade =?",
-        select_resultnull_graduateid: "SELECT student.stuNum,stuName,stuClass from result,student,graduatechoice where graduateid is NULL and student.stuNum=graduatechoice.stuNum and adjust='refuse' and result.stuNum=student.stuNum and stuGrade =? ",
+        select_resultnull_regularid: "SELECT student.stuNum,stuName,stuClass from result,student,regularchoice where regularid is NULL and student.stuNum=regularchoice.stuNum and adjust=1 and result.stuNum=student.stuNum and stuGrade =?",
+        select_resultnull_graduateid: "SELECT student.stuNum,stuName,stuClass from result,student,graduatechoice where graduateid is NULL and student.stuNum=graduatechoice.stuNum and adjust=1 and result.stuNum=student.stuNum and stuGrade =? ",
 
         //是否全部分配
         select_resultall_regularid: "select result.stuNum from result,student where result.stuNum in(select stuNum from regularchoice where adjust=1) and regularid is NULL and stuGrade =? and result.stuNum=student.stuNum",
@@ -153,7 +153,11 @@ var sqlMap = {
         first_success_graduate: "select student.stuNum from graduatechoice ,student where statusFirst='untreat' and stuGrade =? and student.stuNum=graduatechoice.stuNum",
         second_success_graduate: "select student.stuNum from graduatechoice ,student where statusSecond='untreat' and stuGrade =? and student.stuNum=graduatechoice.stuNum",
 
-
+        //查询接受结果
+        select_ifaccept_graduate_first: "select statusFirst from graduatechoice where stuNum=?",
+        select_ifaccept_graduate_second: "select statusSecond from graduatechoice where stuNum=?",
+        select_ifaccept_regular_first: "select statusFirst from regularchoice where stuNum=?",
+        select_ifaccept_regular_second: "select statusSecond from regularchoice where stuNum=?",
 
 
         //最后的结果

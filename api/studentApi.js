@@ -10,7 +10,7 @@ var stulogin = function (req, res) {
     }
     // var addsql = {
     //     stuID: '201706062629',
-    //     stuPass: '1234',
+    //     stuPass: '1235',
     // };
     query(sql, addsql.stuID, function (err, result) {
         if (err) {
@@ -25,7 +25,7 @@ var stulogin = function (req, res) {
 
                 if (resultArray.stuPass == addsql.stuPass) {
                     data.success = 1;
-                    data.passChanged = resultArray.passChanged;
+                    data.passChanged = parseInt(resultArray.passChanged);
                     res.send(data);
                 } else {
                     data.err = "密码不正确";
@@ -46,7 +46,7 @@ var changePass = function (req, res) { //修改密码
     var addsql = req.body;
     // var addsql = {
     //     stuID: '201706062629',
-    //     newPass: '1234',
+    //     newPass: '1235',
     // };
     var data = {
         success: false
@@ -299,10 +299,10 @@ var selectedResult = function (req, res) {
         isRedistribute: true
     }
     var addsql = req.body;
-    /*var addsql={
-        stuID:'201706062629',
-        type:'regular'
-    };*/
+    // var addsql = {
+    //     stuID: '201706062629',
+    //     type: 'regular'
+    // };
     var sql0 = sqlMap.student.select_choice_regular_adjust;
     query(sql0, addsql.stuID, function (err, result) {
         if (err) {
@@ -380,22 +380,27 @@ var tutorResult = function (req, res) {
     //     stuID: '201706062629',
     //     type: "regular"
     // };
-    var str = "";
+    var data = {
+        id: "",
+        name: "",
+        department: "",
+        search: "",
+        contact: ""
+    };
     var sql1 = sqlMap.student.check_teacher_regular;
     var sql2 = sqlMap.student.check_teacher_graduate;
     if (addsql.type === "regular") {
         query(sql1, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERRO]:", err.message);
-                res.send(str);
+                res.send(data);
             } else {
-
                 if (result[0]) {
-
-                    str = result[0];
-                    res.send(str);
+                    data = result[0];
+                    res.send(data);
                 } else {
-                    res.send(str)
+                    console.log(result)
+                    res.send(data)
                 }
             }
         });
@@ -501,7 +506,7 @@ var readinfo = function (req, res) {
         tableList: systemset.tableList
     }
     if (addsql.tutorType == "regular") {
-        var sql1 = sqlMap.student.select_file_tableBody_regelar;
+        var sql1 = sqlMap.student.select_file_tableBody_regular;
         query(sql1, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERROR]:", err.message);
@@ -539,8 +544,8 @@ var readinfo = function (req, res) {
 
 var baseInfo = function (req, res) {
     var addsql = req.body;
-    // var addsql={
-    //     stuID:'201701010101'
+    // var addsql = {
+    //     stuID: '201701010101'
     // }
     var data;
     var sql = sqlMap.student.select_mymessage;
@@ -556,12 +561,12 @@ var baseInfo = function (req, res) {
 }
 var changeBaseInfo = function (req, res) {
     var addsql = req.body;
-    // var addsql={
-    //     stuID:'201701010101',
-    //     stuName:'张三',
-    //     classes:'class1',
-    //     grade:'2017',
-    //     contact:'123456'
+    // var addsql = {
+    //     stuID: '201706062629',
+    //     stuName: '张三',
+    //     classes: 'class1',
+    //     grade: '2017',
+    //     contact: '123456'
     // }
     var data = {
         success: false

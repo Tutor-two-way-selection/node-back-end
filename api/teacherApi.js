@@ -89,7 +89,7 @@ var changeinfo = function (req, res) {
 var stuinfo = function (req, res) {
     var addsql = req.body;
     // var addsql = {
-    //     teaID: "1001",
+    //     teaID: "1003",
     //     type: "regular"
     // };
     var data = {
@@ -478,11 +478,11 @@ var selectstu = function (req, res) {
 var accepted = function (req, res) {
     var addsql = req.body;
     // var addsql = {
-    //     teaID: "1001",
+    //     teaID: "1003",
     //     type: "regular"
     // };
     var data = {
-        tableList: "",
+        tableList: systemset.tableList,
         stuList: ""
     };
     var sql1 = sqlMap.student.select_file_tableBody_regular;

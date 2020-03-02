@@ -1,1 +1,33 @@
-{"tableList":[{"name":"profileTable","title":"学生个人简介表"},{"name":"choiceTable","title":"双向选择表"}],"batch":{"regular":{"2017":2},"graduate":{"2017":1}},"start":{"regular":{"2017":"2020-02-03T16:00:00.000Z"},"graduate":{"2017":"2020-02-28T16:00:00.000Z"}},"end":{"regular":{"2017":"2020-02-03T16:00:00.000Z"},"graduate":{"2017":"2020-02-28T16:00:00.000Z"}}}
+{
+    "tableList": [{
+        "name": "profileTable",
+        "title": "学生个人简介表"
+    }, {
+        "name": "choiceTable",
+        "title": "双向选择表"
+    }],
+    "batch": {
+        "regular": {
+            "2017": 1
+        },
+        "graduate": {
+            "2017": 1
+        }
+    },
+    "start": {
+        "regular": {
+            "2017": "2020-02-03T16:00:00.000Z"
+        },
+        "graduate": {
+            "2017": "2020-02-28T16:00:00.000Z"
+        }
+    },
+    "end": {
+        "regular": {
+            "2017": "2020-02-03T16:00:00.000Z"
+        },
+        "graduate": {
+            "2017": "2020-02-28T16:00:00.000Z"
+        }
+    }
+}
