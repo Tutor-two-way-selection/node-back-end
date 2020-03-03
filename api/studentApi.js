@@ -518,7 +518,7 @@ var readinfo = function(req, res) {
         data.err = "服务器错误";
         res.send(data);
       } else {
-        if (result[0]) {
+        if (result[0].tableBody) {
           var body = JSON.parse(result[0].tableBody);
           //for (i = 0; i < list0.length; i++) {
           //}
@@ -538,7 +538,7 @@ var readinfo = function(req, res) {
         data.err = "服务器错误";
         res.send(data);
       } else {
-        if (result[0]) {
+        if (result[0].tableBody) {
           var body = JSON.parse(result[0].tableBody);
           //for (i = 0; i < list0.length; i++) {
           //}
