@@ -3,7 +3,7 @@ var sqlMap = require("../sqlMap");
 var systemset = require("../systemset.json");
 var fs = require("fs");
 var async = require("async");
-var login = function(req, res, next) {
+var login = function (req, res, next) {
   var sql = sqlMap.admin.login;
   var addsql = req.body;
   var data = {
@@ -13,7 +13,7 @@ var login = function(req, res, next) {
   //     admNum: "123456",
   //     admPass: "12345"
   // };
-  query(sql, addsql.admNum, function(err, result) {
+  query(sql, addsql.admNum, function (err, result) {
     if (err) {
       console.log("[SELECT ERROR]:", err.message);
       data.err = "服务器错误";
@@ -26,7 +26,7 @@ var login = function(req, res, next) {
         console.log(resultArray);
         if (resultArray.adminPass === addsql.admPass) {
           data.success = true;
-          data.grades = resultArray.adminGrade;
+          data.grades = JSON.parse(resultArray.adminGrade);
           res.send(data);
         } else {
           data.err = "密码错误";
@@ -41,7 +41,7 @@ var login = function(req, res, next) {
     }
   });
 };
-var stulist = function(req, res, next) {
+var stulist = function (req, res, next) {
   var sql0 = sqlMap.admin.stulist;
   var addsql = req.body;
   var data = {
@@ -52,7 +52,7 @@ var stulist = function(req, res, next) {
   //     grade: "2017",
   //     type: "regular"
   // };
-  query(sql0, addsql.grade, function(err, result) {
+  query(sql0, addsql.grade, function (err, result) {
     if (err) {
       console.log("[SELECT ERROR]:", err.message);
       data.err = "服务器错误";
@@ -65,18 +65,20 @@ var stulist = function(req, res, next) {
         var sql3 = sqlMap.student.select_choice_regular_second;
         async.eachSeries(
           data.stuList,
-          function(item, callback) {
-            query(sql1, item.stuNum, function(err, result) {
+          function (item, callback) {
+            query(sql1, item.stuNum, function (err, result) {
               if (err) {
                 console.log("[SELECT ERROR]:", err.message);
                 data.err = "文件信息查询错误";
                 callback(err);
               } else {
-                var body = JSON.parse(result[0].tableBody);
-                for (var i = 0; i < data.tableList.length; i++) {
-                  item[data.tableList[i].name] = body[data.tableList[i].name];
+                if (result[0]) {
+                  var body = JSON.parse(result[0].tableBody);
+                  for (var i = 0; i < data.tableList.length; i++) {
+                    item[data.tableList[i].name] = body[data.tableList[i].name];
+                  }
                 }
-                query(sql2, item.stuNum, function(err, result) {
+                query(sql2, item.stuNum, function (err, result) {
                   if (err) {
                     console.log("[SELECT ERROR]:", err.message);
                     data.err = "第一志愿查询错误";
@@ -85,7 +87,7 @@ var stulist = function(req, res, next) {
                     if (result[0]) {
                       item.firstChoice = result[0];
                       var sql = sqlMap.admin.select_ifaccept_regular_first;
-                      query(sql, item.stuNum, function(err, result) {
+                      query(sql, item.stuNum, function (err, result) {
                         if (err) {
                           console.log("[SELECT ERROR]:", err.message);
                           data.err = "第一志愿查询错误";
@@ -98,7 +100,7 @@ var stulist = function(req, res, next) {
                           } else {
                             item.firstChoice.accept = 0;
                           }
-                          query(sql3, item.stuNum, function(err, result) {
+                          query(sql3, item.stuNum, function (err, result) {
                             if (err) {
                               console.log("[SELECT ERROR]:", err.message);
                               data.err = "第二志愿查询错误";
@@ -107,7 +109,7 @@ var stulist = function(req, res, next) {
                                 item.secondChoice = result[0];
                                 var sql =
                                   sqlMap.admin.select_ifaccept_regular_second;
-                                query(sql, item.stuNum, function(err, result) {
+                                query(sql, item.stuNum, function (err, result) {
                                   if (err) {
                                     console.log("[SELECT ERROR]:", err.message);
                                     data.err = "第二志愿查询错误";
@@ -135,7 +137,7 @@ var stulist = function(req, res, next) {
                       });
                     } else {
                       item.firstChoice = {};
-                      query(sql3, item.stuNum, function(err, result) {
+                      query(sql3, item.stuNum, function (err, result) {
                         if (err) {
                           console.log("[SELECT ERROR]:", err.message);
                           data.err = "第二志愿查询错误";
@@ -144,7 +146,7 @@ var stulist = function(req, res, next) {
                             item.secondChoice = result[0];
                             var sql =
                               sqlMap.admin.select_ifaccept_regular_second;
-                            query(sql, item.stuNum, function(err, result) {
+                            query(sql, item.stuNum, function (err, result) {
                               if (err) {
                                 console.log("[SELECT ERROR]:", err.message);
                                 data.err = "第二志愿查询错误";
@@ -172,7 +174,7 @@ var stulist = function(req, res, next) {
               }
             });
           },
-          function(err) {
+          function (err) {
             res.send(data);
           }
         );
@@ -182,8 +184,8 @@ var stulist = function(req, res, next) {
         var sql6 = sqlMap.student.select_choice_graduate_second;
         async.eachSeries(
           data.stuList,
-          function(item, callback) {
-            query(sql4, item.stuNum, function(err, result) {
+          function (item, callback) {
+            query(sql4, item.stuNum, function (err, result) {
               if (err) {
                 console.log("[SELECT ERROR]:", err.message);
                 data.err = "文件信息查询错误";
@@ -193,7 +195,7 @@ var stulist = function(req, res, next) {
                 for (var i = 0; i < data.tableList.length; i++) {
                   item[data.tableList[i].name] = body[data.tableList[i].name];
                 }
-                query(sql5, item.stuNum, function(err, result) {
+                query(sql5, item.stuNum, function (err, result) {
                   if (err) {
                     console.log("[SELECT ERROR]:", err.message);
                     data.err = "第一志愿查询错误";
@@ -202,7 +204,7 @@ var stulist = function(req, res, next) {
                     if (result[0]) {
                       item.firstChoice = result[0];
                       var sql = sqlMap.admin.select_ifaccept_graduate_first;
-                      query(sql, item.stuNum, function(err, result) {
+                      query(sql, item.stuNum, function (err, result) {
                         if (err) {
                           console.log("[SELECT ERROR]:", err.message);
                           data.err = "第一志愿查询错误";
@@ -215,7 +217,7 @@ var stulist = function(req, res, next) {
                           } else {
                             item.firstChoice.accept = 0;
                           }
-                          query(sql6, item.stuNum, function(err, result) {
+                          query(sql6, item.stuNum, function (err, result) {
                             if (err) {
                               console.log("[SELECT ERROR]:", err.message);
                               data.err = "第二志愿查询错误";
@@ -224,7 +226,7 @@ var stulist = function(req, res, next) {
                                 item.secondChoice = result[0];
                                 var sql =
                                   sqlMap.admin.select_ifaccept_graduate_second;
-                                query(sql, item.stuNum, function(err, result) {
+                                query(sql, item.stuNum, function (err, result) {
                                   if (err) {
                                     console.log("[SELECT ERROR]:", err.message);
                                     data.err = "第二志愿查询错误";
@@ -252,7 +254,7 @@ var stulist = function(req, res, next) {
                       });
                     } else {
                       item.firstChoice = {};
-                      query(sql6, item.stuNum, function(err, result) {
+                      query(sql6, item.stuNum, function (err, result) {
                         if (err) {
                           console.log("[SELECT ERROR]:", err.message);
                           data.err = "第二志愿查询错误";
@@ -261,7 +263,7 @@ var stulist = function(req, res, next) {
                             item.secondChoice = result[0];
                             var sql =
                               sqlMap.admin.select_ifaccept_graduate_second;
-                            query(sql, item.stuNum, function(err, result) {
+                            query(sql, item.stuNum, function (err, result) {
                               if (err) {
                                 console.log("[SELECT ERROR]:", err.message);
                                 data.err = "第二志愿查询错误";
@@ -289,7 +291,7 @@ var stulist = function(req, res, next) {
               }
             });
           },
-          function(err) {
+          function (err) {
             res.send(data);
           }
         );
@@ -297,7 +299,7 @@ var stulist = function(req, res, next) {
     }
   });
 };
-var situation = function(req, res, next) {
+var situation = function (req, res, next) {
   var addsql = req.body;
   // var addsql = {
   //     grade: '2017',
@@ -310,7 +312,7 @@ var situation = function(req, res, next) {
   if (addsql.type === "regular") {
     if (addsql.batch == 1) {
       var sql0 = sqlMap.admin.select_first_regular;
-      query(sql0, addsql.grade, function(err, result) {
+      query(sql0, addsql.grade, function (err, result) {
         if (err) {
           console.log("[SELECT ERROR]:", err.message);
           data.err = "服务器错误";
@@ -320,9 +322,9 @@ var situation = function(req, res, next) {
           var sql = sqlMap.admin.update_result_regularid;
           async.eachSeries(
             data.stuList,
-            function(d, callback) {
+            function (d, callback) {
               if (d.status === "accept") {
-                query(sql, [d.teaID, d.stuNum], function(err, result) {
+                query(sql, [d.teaID, d.stuNum], function (err, result) {
                   if (err) {
                     console.log("[UPDATE ERROR]:", err.message);
                     (data.err = "result表更新失败"), callback(err);
@@ -334,7 +336,7 @@ var situation = function(req, res, next) {
                 callback(null, d);
               }
             },
-            function(err) {
+            function (err) {
               res.send(data);
             }
           ); //如果一志愿被录取，则更新result表
@@ -342,7 +344,7 @@ var situation = function(req, res, next) {
       });
     } else if (addsql.batch == 2) {
       var sql1 = sqlMap.admin.select_second_regular;
-      query(sql1.addsql.grade, function(err, result) {
+      query(sql1.addsql.grade, function (err, result) {
         if (err) {
           console.log("[SELECT ERROR]:", err.message);
           data.err = "服务器错误";
@@ -352,9 +354,9 @@ var situation = function(req, res, next) {
           var sql = sqlMap.admin.update_result_regularid;
           async.eachSeries(
             data.stuList,
-            function(d, callback) {
+            function (d, callback) {
               if (d.status === "accept") {
-                query(sql, [d.teaID, d.stuNum], function(err, result) {
+                query(sql, [d.teaID, d.stuNum], function (err, result) {
                   if (err) {
                     console.log("[UPDATE ERROR]:", err.message);
                     (data.err = "result表更新失败"), callback(err);
@@ -366,18 +368,17 @@ var situation = function(req, res, next) {
                 callback(null, d);
               }
             },
-            function(err) {
+            function (err) {
               res.send(data);
             }
           );
         }
       });
-    } else {
-    }
+    } else {}
   } else {
     if (addsql.batch == 1) {
       var sql2 = sqlMap.admin.select_first_graduate;
-      query(sql2, addsql.grade, function(err, result) {
+      query(sql2, addsql.grade, function (err, result) {
         if (err) {
           console.log("[SELECT ERROR]:", err.message);
           data.err = "服务器错误";
@@ -388,9 +389,9 @@ var situation = function(req, res, next) {
           var sql = sqlMap.admin.update_result_graduateid;
           async.eachSeries(
             data.stuList,
-            function(d, callback) {
+            function (d, callback) {
               if (d.status === "accept") {
-                query(sql, [d.teaID, d.stuNum], function(err, result) {
+                query(sql, [d.teaID, d.stuNum], function (err, result) {
                   if (err) {
                     console.log("[UPDATE ERROR]:", err.message);
                     (data.err = "result表更新失败"), callback(err);
@@ -402,7 +403,7 @@ var situation = function(req, res, next) {
                 callback(null, d);
               }
             },
-            function(err) {
+            function (err) {
               res.send(data);
             }
           );
@@ -410,7 +411,7 @@ var situation = function(req, res, next) {
       });
     } else if (addsql.batch == 2) {
       var sql3 = sqlMap.admin.select_second_graduate;
-      query(sql3.addsql.grade, function(err, result) {
+      query(sql3.addsql.grade, function (err, result) {
         if (err) {
           console.log("[SELECT ERROR]:", err.message);
           data.err = "服务器错误";
@@ -420,9 +421,9 @@ var situation = function(req, res, next) {
           var sql = sqlMap.admin.update_result_graduateid;
           async.eachSeries(
             data.stuList,
-            function(d, callback) {
+            function (d, callback) {
               if (d.status === "accept") {
-                query(sql, [d.teaID, d.stuNum], function(err, result) {
+                query(sql, [d.teaID, d.stuNum], function (err, result) {
                   if (err) {
                     console.log("[UPDATE ERROR]:", err.message);
                     (data.err = "result表更新失败"), callback(err);
@@ -434,17 +435,16 @@ var situation = function(req, res, next) {
                 callback(null, d);
               }
             },
-            function(err) {
+            function (err) {
               res.send(data);
             }
           );
         }
       });
-    } else {
-    }
+    } else {}
   }
 };
-var undistri = function(req, res, next) {
+var undistri = function (req, res, next) {
   // var addsql = req.body;
   var addsql = {
     grade: "2016",
@@ -455,7 +455,7 @@ var undistri = function(req, res, next) {
   };
   if (addsql.type === "regular") {
     var sql = sqlMap.admin.select_resultnull_regularid;
-    query(sql, addsql.grade, function(err, result) {
+    query(sql, addsql.grade, function (err, result) {
       if (err) {
         console.log("[SELECT ERROR]:", err.message);
         data.err = "服务器错误";
@@ -466,7 +466,7 @@ var undistri = function(req, res, next) {
     });
   } else {
     var sql1 = sqlMap.admin.select_resultnull_graduateid;
-    query(sql1, addsql.grade, function(err, result) {
+    query(sql1, addsql.grade, function (err, result) {
       if (err) {
         console.log("[SELECT ERROR]:", err.message);
         data.err = "服务器错误";
@@ -477,7 +477,7 @@ var undistri = function(req, res, next) {
     });
   }
 };
-var setbatch = function(req, res, next) {
+var setbatch = function (req, res, next) {
   var addsql = req.body;
   // var addsql = {
   //     grade: '2017',
@@ -492,7 +492,7 @@ var setbatch = function(req, res, next) {
     if (systemset.batch.regular[addsql.grade] === 1) {
       if (addsql.batch === 2) {
         var sql0 = sqlMap.admin.first_success_regular;
-        query(sql0, addsql.grade, function(err, result) {
+        query(sql0, addsql.grade, function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.success = false;
@@ -506,7 +506,7 @@ var setbatch = function(req, res, next) {
             } else {
               systemset.batch.regular[addsql.grade] = 2;
               var str = JSON.stringify(systemset);
-              fs.writeFile("systemset.json", str, function(err) {
+              fs.writeFile("systemset.json", str, function (err) {
                 if (err) {
                   data.success = false;
                   data.err = "写入失败";
@@ -528,7 +528,7 @@ var setbatch = function(req, res, next) {
     } else if (systemset.batch.regular[addsql.grade] === 2) {
       if (addsql.batch === 3) {
         var sql1 = sqlMap.admin.second_success_regular;
-        query(sql1, addsql.grade, function(err, result) {
+        query(sql1, addsql.grade, function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.err = "第二批志愿确认错误";
@@ -542,7 +542,7 @@ var setbatch = function(req, res, next) {
               //如果二轮全部处理，则修改rbatch为3
               systemset.batch.regular[addsql.grade] = 3;
               var str = JSON.stringify(systemset);
-              fs.writeFile("systemset.json", str, function(err) {
+              fs.writeFile("systemset.json", str, function (err) {
                 if (err) {
                   data.success = false;
                   data.err = "写入失败";
@@ -565,7 +565,7 @@ var setbatch = function(req, res, next) {
         //result表里的不调剂的学生都有导师，则成功
 
         var sql2 = sqlMap.admin.select_resultall_regularid;
-        query(sql2, addsql.grade, function(err, result) {
+        query(sql2, addsql.grade, function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.err = "最终结果确认错误";
@@ -578,7 +578,7 @@ var setbatch = function(req, res, next) {
             } else {
               systemset.batch.regular[addsql.grade] = 4;
               var str = JSON.stringify(systemset);
-              fs.writeFile("systemset.json", str, function(err) {
+              fs.writeFile("systemset.json", str, function (err) {
                 if (err) {
                   data.success = false;
                   data.err = "写入失败";
@@ -600,7 +600,7 @@ var setbatch = function(req, res, next) {
       if (addsql.batch === 4) {
         systemset.batch.regular[addsql.grade] = 4;
         var str = JSON.stringify(systemset);
-        fs.writeFile("../systemset.json", str, function(err) {
+        fs.writeFile("../systemset.json", str, function (err) {
           if (err) {
             data.success = false;
             data.err = "写入失败";
@@ -624,7 +624,7 @@ var setbatch = function(req, res, next) {
     if (systemset.batch.graduate[addsql.grade] === 1) {
       if (addsql.batch === 2) {
         var sql3 = sqlMap.admin.first_success_graduate;
-        query(sql3, addsql.grade, function(err, result) {
+        query(sql3, addsql.grade, function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.success = false;
@@ -638,7 +638,7 @@ var setbatch = function(req, res, next) {
             } else {
               systemset.batch.graduate[addsql.grade] = 2;
               var str = JSON.stringify(systemset);
-              fs.writeFile("systemset.json", str, function(err) {
+              fs.writeFile("systemset.json", str, function (err) {
                 if (err) {
                   data.success = false;
                   data.err = "写入失败";
@@ -659,7 +659,7 @@ var setbatch = function(req, res, next) {
     } else if (systemset.batch.graduate[addsql.grade] === 2) {
       if (addsql.batch === 3) {
         var sql4 = sqlMap.admin.second_success_graduate;
-        query(sql4, addsql.grade, function(err, result) {
+        query(sql4, addsql.grade, function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.err = "第二批志愿确认错误";
@@ -673,7 +673,7 @@ var setbatch = function(req, res, next) {
               //如果二轮全部处理，则修改rbatch为3
               systemset.batch.graduate[addsql.grade] = 3;
               var str = JSON.stringify(systemset);
-              fs.writeFile("systemset.json", str, function(err) {
+              fs.writeFile("systemset.json", str, function (err) {
                 if (err) {
                   data.success = false;
                   data.err = "写入失败";
@@ -696,7 +696,7 @@ var setbatch = function(req, res, next) {
         //result表里的不调剂的学生都有导师，则成功
 
         var sql5 = sqlMap.admin.select_resultall_graduateid;
-        query(sql5, addsql.grade, function(err, result) {
+        query(sql5, addsql.grade, function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.err = "最终结果确认错误";
@@ -709,7 +709,7 @@ var setbatch = function(req, res, next) {
             } else {
               systemset.batch.graduate[addsql.grade] = 4;
               var str = JSON.stringify(systemset);
-              fs.writeFile("systemset.json", str, function(err) {
+              fs.writeFile("systemset.json", str, function (err) {
                 if (err) {
                   data.success = false;
                   data.err = "写入失败";
@@ -731,7 +731,7 @@ var setbatch = function(req, res, next) {
       if (addsql.batch === 4) {
         systemset.batch.graduate[addsql.grade] = 4;
         var str1 = JSON.stringify(systemset);
-        fs.writeFile("systemset.json", str1, function(err) {
+        fs.writeFile("systemset.json", str1, function (err) {
           if (err) {
             data.success = false;
             data.err = "写入失败";
@@ -753,7 +753,7 @@ var setbatch = function(req, res, next) {
     }
   }
 };
-var querybatch = function(req, res, next) {
+var querybatch = function (req, res, next) {
   var addsql = req.body;
   // var addsql = {
   //     grade: '2017',
@@ -768,7 +768,7 @@ var querybatch = function(req, res, next) {
   res.send(data);
 };
 //手动分配
-var manual = function(req, res, next) {
+var manual = function (req, res, next) {
   var addsql = req.body;
   // var addsql = {
   //     admNum: "123456",
@@ -785,8 +785,8 @@ var manual = function(req, res, next) {
     var sql0 = sqlMap.admin.update_result_regularid;
     async.eachSeries(
       addsql.manualList,
-      function(d, callback) {
-        query(sql0, [d.stuID, d.teaID], function(err, result) {
+      function (d, callback) {
+        query(sql0, [d.stuID, d.teaID], function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.err = "服务器错误";
@@ -797,7 +797,7 @@ var manual = function(req, res, next) {
           }
         });
       },
-      function(err) {
+      function (err) {
         res.send(data);
       }
     );
@@ -805,8 +805,8 @@ var manual = function(req, res, next) {
     var sql1 = sqlMap.admin.update_result_graduateid;
     async.eachSeries(
       addsql.manualList,
-      function(d, callback) {
-        query(sql1, [d.stuID, d.teaID], function(err, result) {
+      function (d, callback) {
+        query(sql1, [d.stuID, d.teaID], function (err, result) {
           if (err) {
             console.log("[SELECT ERROR]:", err.message);
             data.err = "服务器错误";
@@ -817,13 +817,13 @@ var manual = function(req, res, next) {
           }
         });
       },
-      function(err) {
+      function (err) {
         res.send(data);
       }
     );
   }
 };
-var setpub = function(req, res, next) {
+var setpub = function (req, res, next) {
   var addsql = req.body;
   // var addsql = {
   //     grade: '2017',
@@ -838,7 +838,7 @@ var setpub = function(req, res, next) {
     systemset.start.regular[addsql.grade] = addsql.start;
     systemset.end.regular[addsql.grade] = addsql.end;
     var str = JSON.stringify(systemset);
-    fs.writeFile("systemset.json", str, function(err) {
+    fs.writeFile("systemset.json", str, function (err) {
       if (err) {
         data.success = false;
         data.err = "写入失败";
@@ -852,7 +852,7 @@ var setpub = function(req, res, next) {
     systemset.start.graduate[addsql.grade] = addsql.start;
     systemset.end.graduate[addsql.grade] = addsql.end;
     var str1 = JSON.stringify(systemset);
-    fs.writeFile("systemset.json", str1, function(err) {
+    fs.writeFile("systemset.json", str1, function (err) {
       if (err) {
         data.success = false;
         data.err = "写入失败";
@@ -864,7 +864,7 @@ var setpub = function(req, res, next) {
     });
   }
 };
-var querypub = function(req, res, next) {
+var querypub = function (req, res, next) {
   var addsql = req.body;
   // var addsql = {
   //     grade: '2017',
@@ -884,7 +884,7 @@ var querypub = function(req, res, next) {
     res.send(data);
   }
 };
-var final = function(req, res, next) {
+var final = function (req, res, next) {
   var addsql = req.body;
   //   var addsql = {
   //     grade: "2017",
@@ -895,7 +895,7 @@ var final = function(req, res, next) {
   };
   if (addsql.type === "regular") {
     var sql0 = sqlMap.admin.select_final_regular;
-    query(sql0, addsql.grade, function(err, result) {
+    query(sql0, addsql.grade, function (err, result) {
       if (err) {
         console.log("SELECT ERROR", err.message);
         res.send(data);
@@ -906,7 +906,7 @@ var final = function(req, res, next) {
     });
   } else {
     var sql1 = sqlMap.admin.select_final_graduate;
-    query(sql1, addsql.grade, function(err, result) {
+    query(sql1, addsql.grade, function (err, result) {
       if (err) {
         console.log("SELECT ERROR", err.message);
         res.send(data);
@@ -917,7 +917,7 @@ var final = function(req, res, next) {
     });
   }
 };
-var addStu = function(req, res, next) {
+var addStu = function (req, res, next) {
   // var addsql = {
   //     grade: "2016",
   //     stuList: [{
@@ -952,35 +952,35 @@ var addStu = function(req, res, next) {
   var sql4 = sqlMap.admin.insert_graduate;
   async.eachSeries(
     addsql.stuList,
-    function(item, callback) {
+    function (item, callback) {
       query(
         sql0,
         [item.id, item.name, item.classes, item.contact, addsql.grade],
-        function(err) {
+        function (err) {
           if (err) {
             data.err = item.id + "加入学生基本信息失败";
             data.success = false;
             callback(err);
           } else {
-            query(sql1, [item.id, item.initpass, item.initpass], function(err) {
+            query(sql1, [item.id, item.initpass, item.initpass], function (err) {
               if (err) {
                 data.err = item.id + "加入学生账户失败";
                 data.success = false;
                 callback(err);
               } else {
-                query(sql2, item.id, function(err) {
+                query(sql2, item.id, function (err) {
                   if (err) {
                     data.err = item.id + "加入结果表失败";
                     data.success = false;
                     callback(err);
                   } else {
-                    query(sql3, item.id, function(err) {
+                    query(sql3, item.id, function (err) {
                       if (err) {
                         data.err = item.id + "加入regular表失败";
                         data.success = false;
                         callback(err);
                       } else {
-                        query(sql4, item.id, function(err) {
+                        query(sql4, item.id, function (err) {
                           if (err) {
                             data.err = item.id + "加入regular表失败";
                             data.success = false;
@@ -999,7 +999,7 @@ var addStu = function(req, res, next) {
         }
       );
     },
-    function(err) {
+    function (err) {
       res.send(data);
     }
   );
