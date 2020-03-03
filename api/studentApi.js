@@ -555,7 +555,7 @@ var baseInfo = function (req, res) {
             data.err = "服务器错误";
             res.send(data);
         }
-        data = result;
+        data = result[0];
         res.send(data);
     });
 }
