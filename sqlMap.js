@@ -22,7 +22,7 @@ var sqlMap = {
         //查询自己的信息
         select_mymessage: 'select stuName,stuClass,stuGrade,stuTelephone from student where stuNum=?',
         //修改信息
-        update_mymessage: 'update student set stuName=?,stuClass=?,stuGrade=?,stuTelephone=? from student where stuNum=?',
+        update_mymessage: 'update student set stuName=?,stuClass=?,stuGrade=?,stuTelephone=? where stuNum=?',
 
 
         //所有导师按部门
