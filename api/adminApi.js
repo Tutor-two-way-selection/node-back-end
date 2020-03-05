@@ -174,7 +174,7 @@ var stulist = function (req, res, next) {
             res.send(data);
           }
         );
-      } else {
+      } else if (addsql.type == "graduate") {
         var sql4 = sqlMap.student.select_file_tableBody_graduate;
         var sql5 = sqlMap.student.select_choice_graduate_first;
         var sql6 = sqlMap.student.select_choice_graduate_second;
@@ -293,6 +293,8 @@ var stulist = function (req, res, next) {
             res.send(data);
           }
         );
+      } else {
+        res.send(data);
       }
     }
   });
