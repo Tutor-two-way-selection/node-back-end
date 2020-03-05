@@ -180,12 +180,15 @@ var stuinfo = function (req, res) {
                       data.err = "服务器错误";
                       callback(err);
                     } else {
-                      var body = JSON.parse(result[0].tableBody);
-                      for (var i = 0; i < systemset.tableList.length; i++) {
-                        item[systemset.tableList[i].name] =
-                          body[systemset.tableList[i].name];
+                      if (result[0].tableBody) {
+                        var body = JSON.parse(result[0].tableBody);
+                        for (var i = 0; i < systemset.tableList.length; i++) {
+                          item[systemset.tableList[i].name] =
+                            body[systemset.tableList[i].name];
+                        }
                       }
                       callback(null, item);
+
                     }
                   });
                 },
@@ -272,10 +275,12 @@ var stuinfo = function (req, res) {
                       data.err = "服务器错误";
                       callback(err);
                     } else {
-                      var body = JSON.parse(result[0].tableBody);
-                      for (var i = 0; i < systemset.tableList.length; i++) {
-                        item[systemset.tableList[i].name] =
-                          body[systemset.tableList[i].name];
+                      if (result[0].tableBody) {
+                        var body = JSON.parse(result[0].tableBody);
+                        for (var i = 0; i < systemset.tableList.length; i++) {
+                          item[systemset.tableList[i].name] =
+                            body[systemset.tableList[i].name];
+                        }
                       }
                       callback(null, item);
                     }
