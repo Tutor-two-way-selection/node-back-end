@@ -21,5 +21,4 @@ var query = function (sql, addsql, callback) {
         }
     });
 };
-
 module.exports = query;

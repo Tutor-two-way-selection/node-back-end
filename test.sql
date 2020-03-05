@@ -38,7 +38,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES ('123456','123456','[2017]');
+INSERT INTO `admin` VALUES ('123456','123456','[2017, 2016]');
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -55,8 +55,10 @@ CREATE TABLE `graduatechoice` (
   `statusFirst` varchar(255) DEFAULT NULL,
   `idSecond` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `statusSecond` varchar(255) DEFAULT NULL,
-  `adjust` tinyint(4) DEFAULT NULL,
+  `adjust` tinyint(4) DEFAULT '1',
   `tableBody` json DEFAULT NULL,
+  `idThird` varchar(255) DEFAULT NULL,
+  `statusThird` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`stuNum`) USING BTREE,
   KEY `teacher_key` (`idFirst`,`idSecond`) USING BTREE,
   CONSTRAINT `stuNum_key` FOREIGN KEY (`stuNum`) REFERENCES `student` (`stuNum`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -69,7 +71,6 @@ CREATE TABLE `graduatechoice` (
 
 LOCK TABLES `graduatechoice` WRITE;
 /*!40000 ALTER TABLE `graduatechoice` DISABLE KEYS */;
-INSERT INTO `graduatechoice` VALUES ('201701010101',NULL,NULL,NULL,NULL,NULL,NULL),('201701010102',NULL,NULL,NULL,NULL,NULL,NULL),('201701010103',NULL,NULL,NULL,NULL,NULL,NULL),('201706062629',NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `graduatechoice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -86,8 +87,10 @@ CREATE TABLE `regularchoice` (
   `statusFirst` varchar(255) DEFAULT NULL,
   `idSecond` varchar(255) DEFAULT NULL,
   `statusSecond` varchar(255) DEFAULT NULL,
-  `adjust` tinyint(4) DEFAULT NULL,
+  `adjust` tinyint(4) DEFAULT '1',
   `tableBody` json DEFAULT NULL,
+  `idThird` varchar(255) DEFAULT NULL,
+  `statusThird` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`stuNum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -98,7 +101,6 @@ CREATE TABLE `regularchoice` (
 
 LOCK TABLES `regularchoice` WRITE;
 /*!40000 ALTER TABLE `regularchoice` DISABLE KEYS */;
-INSERT INTO `regularchoice` VALUES ('201701010101',NULL,NULL,NULL,NULL,NULL,NULL),('201701010102',NULL,NULL,NULL,NULL,NULL,NULL),('201701010103',NULL,NULL,NULL,NULL,NULL,NULL),('201706062629','1001','accept','1003','accept',0,'{\"choiceTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}]}, \"profileTable\": {\"flag\": true, \"fileList\": [{\"url\": \"abcabcabcabcabcabcabcabc\", \"name\": \"caster.jpg\", \"status\": \"success\"}, {\"url\": \"http://localhost:8080/downloadFile?filename=saidgihkdglha&oldname=va11halla.png\", \"name\": \"caster.jpg\", \"size\": 1447144, \"status\": \"success\"}]}}');
 /*!40000 ALTER TABLE `regularchoice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -126,7 +128,6 @@ CREATE TABLE `result` (
 
 LOCK TABLES `result` WRITE;
 /*!40000 ALTER TABLE `result` DISABLE KEYS */;
-INSERT INTO `result` VALUES ('201701010101',NULL,NULL),('201701010102',NULL,NULL),('201701010103',NULL,NULL),('201706062629',NULL,NULL);
 /*!40000 ALTER TABLE `result` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,7 +142,8 @@ CREATE TABLE `stuaccount` (
   `stuNum` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `initPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `stuPass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `passChanged` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `passChanged` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`stuNum`),
   KEY `stunum1` (`stuNum`) USING BTREE,
   CONSTRAINT `stunum1` FOREIGN KEY (`stuNum`) REFERENCES `student` (`stuNum`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
@@ -153,7 +155,6 @@ CREATE TABLE `stuaccount` (
 
 LOCK TABLES `stuaccount` WRITE;
 /*!40000 ALTER TABLE `stuaccount` DISABLE KEYS */;
-INSERT INTO `stuaccount` VALUES ('201706062629','291021','1234','1'),('201701010101','090617','090617','0'),('201701010102','090617','090617','0'),('201701010103','090617','090617','0');
 /*!40000 ALTER TABLE `stuaccount` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -170,7 +171,8 @@ CREATE TABLE `student` (
   `stuClass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `stuTelephone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `stuGrade` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  PRIMARY KEY (`stuNum`) USING BTREE
+  PRIMARY KEY (`stuNum`) USING BTREE,
+  UNIQUE KEY `stuNum_UNIQUE` (`stuNum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -180,7 +182,6 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES ('201701010101','张三','class1','123456789','2016'),('201701010102','李四','class2','123456789','2016'),('201701010103','王五','class1','123456789','2016'),('201706062629','张三','数字媒体技术1班','123456789','2017');
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,6 +195,7 @@ DROP TABLE IF EXISTS `teaaccount`;
 CREATE TABLE `teaaccount` (
   `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `pass` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `id1` (`id`) USING BTREE,
   CONSTRAINT `id1` FOREIGN KEY (`id`) REFERENCES `teacher` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
@@ -205,7 +207,7 @@ CREATE TABLE `teaaccount` (
 
 LOCK TABLES `teaaccount` WRITE;
 /*!40000 ALTER TABLE `teaaccount` DISABLE KEYS */;
-INSERT INTO `teaaccount` VALUES ('1001','12345678');
+INSERT INTO `teaaccount` VALUES ('1001','12345678'),('1002','12345678'),('1003','12345678');
 /*!40000 ALTER TABLE `teaaccount` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -249,4 +251,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-02 12:11:58
+-- Dump completed on 2020-03-05 13:12:00

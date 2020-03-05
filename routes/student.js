@@ -1,8 +1,6 @@
 var express = require("express");
 var router = express.Router();
 var studentservices = require("../api/studentApi");
-
-
 router.post("/login", studentservices.stulogin)
 router.post("/changePass", studentservices.changePass)
 router.post("/allteacher", studentservices.allTeacher)

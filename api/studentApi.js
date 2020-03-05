@@ -8,10 +8,6 @@ var stulogin = function (req, res) {
         success: 0,
         passChanged: 0
     };
-    // var addsql = {
-    //     stuID: '201706062629',
-    //     stuPass: '1235',
-    // };
     query(sql, addsql.stuID, function (err, result) {
         if (err) {
             console.log("[SELECT ERROR]:", err.message);
@@ -304,17 +300,20 @@ var selectedResult = function (req, res) {
     //     type: 'regular'
     // };
     var sql0 = sqlMap.student.select_choice_regular_adjust;
-    query(sql0, addsql.stuID, function (err, result) {
-        if (err) {
-            console.log("[SELECT ERROR]:", err.message);
-            res.send(data);
-        } else {
-            data.isRedistribute = result[0];
-            if (addsql.type == "regular") {
+    var $sql0 = sqlMap.student.select_choice_graduate_adjust;
+    if (addsql.type == "regular") {
+        query(sql0, addsql.stuID, function (err, result) {
+            if (err) {
+                console.log("[SELECT ERROR]:", err.message);
+                data.err = "调剂参量查询错误"
+                res.send(data);
+            } else {
+                data.isRedistribute = result[0].adjust;
                 var sql1 = sqlMap.student.select_choice_regular_first;
                 query(sql1, addsql.stuID, function (err, result) {
                     if (err) {
                         console.log("[SELECT ERROR]:", err.message);
+                        data.err = "第一志愿查询错误"
                         res.send(data);
                     } else {
                         if (result[0]) {
@@ -323,34 +322,7 @@ var selectedResult = function (req, res) {
                             query(sql2, addsql.stuID, function (err, result) {
                                 if (err) {
                                     console.log("[SELECT ERROR]:", err.message);
-                                    res.send(data);
-                                } else {
-                                    if (result[0]) {
-                                        data.secondChoice = result[0];
-                                        res.send(data);
-                                    } else {
-                                        res.send(data);
-                                    }
-                                }
-                            });
-                        } else {
-                            res.send(data);
-                        }
-                    }
-                });
-            } else if (addsql.type == "graduate") {
-                var $sql1 = sqlMap.student.select_choice_graduate_first;
-                query($sql1, addsql.stuID, function (err, result) {
-                    if (err) {
-                        console.log("[SELECT ERROR]:", err.message);
-                        res.send(data);
-                    } else {
-                        if (result[0]) {
-                            data.firstChoice = result[0];
-                            var $sql2 = sqlMap.student.select_choice_graduate_second;
-                            query($sql2, addsql.stuID, function (err, result) {
-                                if (err) {
-                                    console.log("[SELECT ERROR]:", err.message);
+                                    data.err = "第二志愿查询错误"
                                     res.send(data);
                                 } else {
                                     if (result[0]) {
@@ -367,9 +339,48 @@ var selectedResult = function (req, res) {
                     }
                 });
             }
-        }
-    });
-};
+        })
+    } else if (addsql.type == "graduate") {
+        query($sql0, addsql.stuID, function (err, result) {
+            if (err) {
+                console.log("[SELECT ERROR]:", err.message);
+                data.err = "调剂参量查询错误"
+                res.send(data);
+            } else {
+                data.isRedistribute = result[0].adjust;
+                var $sql1 = sqlMap.student.select_choice_graduate_first;
+                query($sql1, addsql.stuID, function (err, result) {
+                    if (err) {
+                        console.log("[SELECT ERROR]:", err.message);
+                        data.err = "第一志愿查询错误"
+                        res.send(data);
+                    } else {
+                        if (result[0]) {
+                            data.firstChoice = result[0];
+                            var $sql2 = sqlMap.student.select_choice_graduate_second;
+                            query($sql2, addsql.stuID, function (err, result) {
+                                if (err) {
+                                    console.log("[SELECT ERROR]:", err.message);
+                                    data.err = "第二志愿查询错误"
+                                    res.send(data);
+                                } else {
+                                    if (result[0]) {
+                                        data.secondChoice = result[0];
+                                        res.send(data);
+                                    } else {
+                                        res.send(data);
+                                    }
+                                }
+                            });
+                        } else {
+                            res.send(data);
+                        }
+                    }
+                });
+            }
+        })
+    }
+}
 
 var tutorResult = function (req, res) {
     var addsql = req.body;
@@ -405,13 +416,13 @@ var tutorResult = function (req, res) {
         query(sql2, addsql.stuID, function (err, result) {
             if (err) {
                 console.log("[SELECT ERRO]:", err.message);
-                res.send(str);
+                res.send(data);
             } else {
                 if (result[0]) {
-                    str = result[0];
-                    res.send(str);
+                    data = result[0];
+                    res.send(data);
                 } else {
-                    res.send(str);
+                    res.send(data);
                 }
             }
         });

@@ -9,6 +9,8 @@ var student = require("./routes/student");
 var teacher = require("./routes/teacher");
 var admin = require("./routes/admin");
 var app = express();
+var cors = require("cors");
+app.use(cors());
 var fs = require("fs");
 var multer = require("multer"); //引入multer
 var upload = multer({
@@ -18,7 +20,7 @@ var upload = multer({
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.all("*", function (req, res, next) {
+app.all("*", function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
@@ -38,15 +40,14 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/student", student);
 app.use("/teacher", teacher);
-app.use("/admin", admin)
+app.use("/admin", admin);
 // catch 404 and forward to error handler
 app.use("/downloadFile", (req, res, next) => {
   var filename = req.query.filename;
-  var oldname = req.query.oldname;
   var file = "uploads/" + filename;
   res.writeHead(200, {
     "Content-Type": "application/octet-stream", //告诉浏览器这是一个二进制文件
-    "Content-Disposition": "attachment; filename=" + encodeURI(oldname) //告诉浏览器这是一个需要下载的文件
+    "Content-Disposition": "attachment; filename=" + encodeURI(filename) //告诉浏览器这是一个需要下载的文件
   }); //设置响应头
   var readStream = fs.createReadStream(file); //得到文件输入流
 
@@ -106,7 +107,7 @@ app.use("/uploadFile", upload.single("file"), (req, res, next) => {
   res.send(ret);
 });
 
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   var err = new Error("Not Found");
   err.status = 404;
   next(err);
