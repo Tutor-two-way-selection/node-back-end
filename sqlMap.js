@@ -101,9 +101,9 @@ var sqlMap = {
         select_stu_first_regular: "select regularchoice.stuNum,stuName from regularchoice,student where idFirst=? and statusFirst='untreat' and stuGrade=? and regularchoice.stuNum=student.stuNum",
         select_stu_second_regular: "select regularchoice.stuNum,stuName from regularchoice,student where idSecond=? and idThird is NULL and statusFirst='refuse' and stuGrade=?  and regularchoice.stuNum=student.stuNum",
         select_stu_third_regular: "select regularchoice.stuNum,stuName from regularchoice,student where idThird=? and statusThird ='untreat' and stuGrade=?  and regularchoice.stuNum=student.stuNum",
-        select_stu_first_graduate: "select graduatechoice.stuNum,stuName, from graduatechoice,student where idFirst=? and statusFirst='untreat' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
-        select_stu_second_graduate: "select graduatechoice.stuNum,stuName, from graduatechoice,student where idSecond=? and idThird is NULL and statusFirst='refuse' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
-        select_stu_third_graduate: "select graduatechoice.stuNum,stuName, from graduatechoice,student where idThird=? and statusThird='untreat' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
+        select_stu_first_graduate: "select graduatechoice.stuNum,stuName from graduatechoice,student where idFirst=? and statusFirst='untreat' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
+        select_stu_second_graduate: "select graduatechoice.stuNum,stuName from graduatechoice,student where idSecond=? and idThird is NULL and statusFirst='refuse' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
+        select_stu_third_graduate: "select graduatechoice.stuNum,stuName from graduatechoice,student where idThird=? and statusThird='untreat' and stuGrade=? and graduatechoice.stuNum=student.stuNum",
 
         //拒收或者接收
         receive_first_regular: "update regularchoice set statusFirst='accept' where  stuNum=?",
@@ -139,12 +139,12 @@ var sqlMap = {
         //第一轮与第二轮
         select_first_regular: 'select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusFirst status from student ,teacher,regularchoice where student.stuNum=regularchoice.stuNum and teacher.id=regularchoice.idFirst and stuGrade =?',
         select_second_regular: "select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusSecond status from student ,teacher,regularchoice where statusFirst !='accept'and student.stuNum=regularchoice.stuNum and teacher.id=regularchoice.idSecond  and stuGrade =? ",
-        select_third_regular: "select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusSecond status from student ,teacher,regularchoice where statusThird is not NULL and student.stuNum=regularchoice.stuNum and teacher.id=regularchoice.idThird and stuGrade =? ",
+        select_third_regular: "select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusThird status from student ,teacher,regularchoice where statusThird is not NULL and student.stuNum=regularchoice.stuNum and teacher.id=regularchoice.idThird and stuGrade =? ",
 
 
         select_first_graduate: 'select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusFirst status from student ,teacher,graduatechoice where student.stuNum=graduatechoice.stuNum and teacher.id=graduatechoice.idFirst and stuGrade =?',
         select_second_graduate: "select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusSecond status from student ,teacher,graduatechoice where statusFirst !='accept'and student.stuNum=graduatechoice.stuNum and teacher.id=graduatechoice.idSecond and stuGrade =?",
-        select_third_graduate: "select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusSecond status from student ,teacher,graduatechoice where statusThird is not NULL and student.stuNum=graduatechoice.stuNum and teacher.id=graduatechoice.idThird and stuGrade =? ",
+        select_third_graduate: "select student.stuNum,stuName,stuClass,teacher.id teaID,teacher.name,statusThird status from student ,teacher,graduatechoice where statusThird is not NULL and student.stuNum=graduatechoice.stuNum and teacher.id=graduatechoice.idThird and stuGrade =? ",
 
 
 

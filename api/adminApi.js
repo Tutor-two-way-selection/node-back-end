@@ -667,8 +667,8 @@ var setbatch = function (req, res, next) {
         res.send(data);
       }
     } else if (systemset.batch.regular[addsql.grade] === 4) {
-      if (addsql.batch === 4) {
-        systemset.batch.regular[addsql.grade] = 4;
+      if (addsql.batch === 5) {
+        systemset.batch.regular[addsql.grade] = 5;
         var str = JSON.stringify(systemset);
         fs.writeFile("../systemset.json", str, function (err) {
           if (err) {
