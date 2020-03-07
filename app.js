@@ -19,8 +19,8 @@ var upload = multer({
 // view engine setup
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.all("*", function(req, res, next) {
+app.use('/', express.static('./dist'));
+app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
@@ -107,7 +107,7 @@ app.use("/uploadFile", upload.single("file"), (req, res, next) => {
   res.send(ret);
 });
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error("Not Found");
   err.status = 404;
   next(err);
